@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
+import type { SeasonalTrailStyle } from '../hooks/useSeasonalTheme'
 
-export type TrailStyle = 'sparkles' | 'hearts' | 'lollipops' | 'rainbow' | 'off'
+export type TrailStyle = 'auto' | 'sparkles' | 'hearts' | 'lollipops' | 'rainbow' | 'off'
 
-const TRAIL_PARTICLES: Record<Exclude<TrailStyle, 'off'>, string[]> = {
+// The actual rendering style (excludes 'auto' and 'off')
+type ActiveTrailStyle = 'sparkles' | 'hearts' | 'lollipops' | 'rainbow'
+
+const TRAIL_PARTICLES: Record<ActiveTrailStyle, string[]> = {
   sparkles: ['✨', '⭐', '✦', '★', '✧'],
   hearts: ['💖', '💗', '💕', '❤️', '💜'],
   lollipops: ['🍭', '🍬', '🍫', '🧁', '🍩'],
@@ -12,6 +16,7 @@ const TRAIL_PARTICLES: Record<Exclude<TrailStyle, 'off'>, string[]> = {
 const RAINBOW_COLORS = ['#ff71ce', '#01cdfe', '#b967ff', '#fffb96', '#05ffa1']
 
 const STYLE_LABELS: Record<TrailStyle, string> = {
+  auto: '🔮',
   sparkles: '✨',
   hearts: '💖',
   lollipops: '🍭',
@@ -19,7 +24,7 @@ const STYLE_LABELS: Record<TrailStyle, string> = {
   off: '🚫',
 }
 
-const STYLE_ORDER: TrailStyle[] = ['sparkles', 'hearts', 'lollipops', 'rainbow', 'off']
+const STYLE_ORDER: TrailStyle[] = ['auto', 'sparkles', 'hearts', 'lollipops', 'rainbow', 'off']
 
 const POOL_SIZE = 25
 const STORAGE_KEY = 'cursorTrailStyle'
@@ -35,6 +40,10 @@ interface Particle {
   active: boolean
 }
 
+interface CursorTrailProps {
+  seasonalStyle?: SeasonalTrailStyle
+}
+
 function isTouchDevice(): boolean {
   if (typeof window === 'undefined') return true
   return window.matchMedia('(pointer: coarse)').matches
@@ -47,12 +56,12 @@ function getStoredStyle(): TrailStyle {
       return stored as TrailStyle
     }
   } catch { /* localStorage unavailable */ }
-  return 'sparkles'
+  return 'auto'
 }
 
-export default function CursorTrail() {
+export default function CursorTrail({ seasonalStyle = null }: CursorTrailProps) {
   const [style, setStyle] = useState<TrailStyle>(getStoredStyle)
-  const [isTouch, setIsTouch] = useState(true) // default true, flip on mount
+  const [isTouch, setIsTouch] = useState(true)
   const particlesRef = useRef<Particle[]>([])
   const nextIndexRef = useRef(0)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -60,26 +69,22 @@ export default function CursorTrail() {
   const mouseRef = useRef({ x: 0, y: 0 })
   const lastSpawnRef = useRef(0)
 
-  // Detect touch on mount
+  // Resolve the actual rendering style
+  const resolvedStyle: ActiveTrailStyle | 'off' =
+    style === 'off' ? 'off' :
+    style === 'auto' ? (seasonalStyle ?? 'sparkles') :
+    style
+
   useEffect(() => {
     setIsTouch(isTouchDevice())
   }, [])
 
-  // Initialize particle pool
   useEffect(() => {
     particlesRef.current = Array.from({ length: POOL_SIZE }, () => ({
-      x: 0,
-      y: 0,
-      char: '',
-      color: null,
-      opacity: 0,
-      vy: 0,
-      life: 0,
-      active: false,
+      x: 0, y: 0, char: '', color: null, opacity: 0, vy: 0, life: 0, active: false,
     }))
   }, [])
 
-  // Persist style to localStorage
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, style)
@@ -95,13 +100,14 @@ export default function CursorTrail() {
 
   // Main animation loop + mouse tracking
   useEffect(() => {
-    if (isTouch || style === 'off') return
+    if (isTouch || resolvedStyle === 'off') return
+
+    const activeStyle = resolvedStyle
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current.x = e.clientX
       mouseRef.current.y = e.clientY
 
-      // Throttle spawns to ~30ms apart
       const now = performance.now()
       if (now - lastSpawnRef.current < 30) return
       lastSpawnRef.current = now
@@ -112,19 +118,18 @@ export default function CursorTrail() {
       const pool = particlesRef.current
       const particle = pool[nextIndexRef.current]
       const el = container.children[nextIndexRef.current] as HTMLElement | undefined
-      const chars = TRAIL_PARTICLES[style]
+      const chars = TRAIL_PARTICLES[activeStyle]
       const charIdx = Math.floor(Math.random() * chars.length)
 
       particle.x = e.clientX + (Math.random() - 0.5) * 16
       particle.y = e.clientY + (Math.random() - 0.5) * 16
       particle.char = chars[charIdx]
-      particle.color = style === 'rainbow' ? RAINBOW_COLORS[charIdx] : null
+      particle.color = activeStyle === 'rainbow' ? RAINBOW_COLORS[charIdx] : null
       particle.opacity = 1
       particle.vy = 0.3 + Math.random() * 0.5
       particle.life = 1
       particle.active = true
 
-      // Update DOM element content immediately on spawn
       if (el) {
         el.textContent = particle.char
         if (particle.color) {
@@ -156,7 +161,7 @@ export default function CursorTrail() {
           p.life -= 0.02
           p.opacity = Math.max(0, p.life)
           p.y += p.vy
-          p.vy += 0.03 // gravity
+          p.vy += 0.03
 
           if (p.life <= 0) {
             p.active = false
@@ -180,51 +185,43 @@ export default function CursorTrail() {
       window.removeEventListener('mousemove', handleMouseMove)
       cancelAnimationFrame(rafRef.current)
     }
-  }, [isTouch, style])
+  }, [isTouch, resolvedStyle])
 
-  // Update particle chars when style changes (reset pool)
+  // Reset pool when resolved style changes
   useEffect(() => {
     particlesRef.current.forEach(p => {
       p.active = false
       p.life = 0
       p.opacity = 0
     })
-  }, [style])
+  }, [resolvedStyle])
 
   if (isTouch) return null
 
+  const isOff = resolvedStyle === 'off'
+  const displayLabel = STYLE_LABELS[style]
+  const titleText = style === 'auto'
+    ? `Trail: auto (${seasonalStyle ?? 'sparkles'}) — click to change`
+    : `Trail: ${style} — click to change`
+
   return (
     <>
-      {/* Particle container */}
       <div ref={containerRef} className="cursor-trail-container" aria-hidden="true">
         {Array.from({ length: POOL_SIZE }, (_, i) => (
           <span key={i} className="cursor-trail-particle">
-            {/* char set dynamically but we need initial content for layout */}
             {particlesRef.current[i]?.char || '✨'}
           </span>
         ))}
       </div>
 
-      {/* Style toggle button */}
-      {style !== 'off' ? (
-        <button
-          className="cursor-trail-toggle"
-          onClick={cycleStyle}
-          title={`Trail: ${style} (click to change)`}
-          aria-label={`Cursor trail style: ${style}. Click to change.`}
-        >
-          {STYLE_LABELS[style]}
-        </button>
-      ) : (
-        <button
-          className="cursor-trail-toggle cursor-trail-toggle--off"
-          onClick={cycleStyle}
-          title="Trail off (click to enable)"
-          aria-label="Cursor trail disabled. Click to enable."
-        >
-          {STYLE_LABELS.off}
-        </button>
-      )}
+      <button
+        className={`cursor-trail-toggle${isOff ? ' cursor-trail-toggle--off' : ''}`}
+        onClick={cycleStyle}
+        title={isOff ? 'Trail off — click to enable' : titleText}
+        aria-label={isOff ? 'Cursor trail disabled. Click to enable.' : `Cursor trail style: ${style}. Click to change.`}
+      >
+        {displayLabel}
+      </button>
     </>
   )
 }

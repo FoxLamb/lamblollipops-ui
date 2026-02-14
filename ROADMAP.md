@@ -11,9 +11,13 @@ Feature roadmap for [lamblollipops.com](https://lamblollipops.com) -- a retro 90
 The site is a single-page experience with:
 
 - Splash screen with animated lamb and "Click to Enter"
-- Canvas-based animated starfield background
-- Scrolling marquee tickers
-- Interactive lamb hero with click-to-sparkle effects and orbiting particles
+- Canvas-based animated starfield background with crescent moon and fireflies (night mode)
+- Scrolling marquee tickers with time-of-day and holiday overrides
+- Interactive lamb hero with click-to-sparkle effects, orbiting particles, sleeping/wake-on-click night mode, holiday costumes, and golden lamb rare event
+- Cursor trail with 4 switchable styles (sparkles, hearts, lollipops, rainbow), toggle button, localStorage persistence, disabled on touch devices
+- Dynamic seasonal/time-based theming: night mode (9pm-6am), morning/afternoon/evening palette shifts, 6 holidays with palette overrides + particle overlays + costume overlays + themed marquee text, weekend sunglasses mode, 1% golden lamb rare event
+- Holiday particle overlays: snowflakes (Christmas), bats (Halloween), hearts (Valentine's), clovers (St. Patrick's), eggs (Easter), fiesta confetti (Cinco de Mayo)
+- CSS variable-driven palette system with per-period and per-holiday color overrides applied at document root
 - Embedded YouTube vaporwave radio stream
 - Retro footer with webring placeholders, badges, and fake copyright
 - Custom lollipop cursor, pixel fonts (Press Start 2P, VT323), neon vaporwave palette
@@ -23,77 +27,49 @@ Tech: React 19, TypeScript, Vite 6, custom CSS, self-hosted fonts. No backend, n
 
 ---
 
-## Build Now
+## Done
 
-Six features approved for implementation, ordered by build sequence.
+### 1. Cursor Trail Effects ✓
 
-### 1. Cursor Trail Effects
+Sparkle/star trail that follows the mouse cursor. Pool of 25 recycled particles with `requestAnimationFrame` animation. Four switchable styles (sparkles, hearts, lollipops, rainbow) via a retro toggle button. Particles spawn at cursor, fade out with gravity. Disabled on touch devices. Style saved in localStorage.
 
-**What:** Add a sparkle/star trail that follows the mouse cursor everywhere on the page. Classic 90s JavaScript effect.
+### 2. Seasonal / Time-Based Content ✓
 
-**Details:**
-- Trail of small sparkle particles (stars, hearts, lollipops, or rainbow dots) that follow the cursor
-- Particles spawn at cursor position, then fade out and fall slightly with gravity
-- Pool of ~20-30 particles recycled for performance
-- Multiple trail styles available (sparkles, hearts, lollipops, rainbow)
-- Small toggle button in a corner to switch styles or disable the trail
-- Trail only active on desktop (disabled on touch devices)
-- Style preference saved in localStorage
+Dynamic site theming based on time of day, day of week, and holidays.
 
-**Implementation notes:**
-- New `CursorTrail.tsx` component rendered at the App level
-- Use `requestAnimationFrame` for smooth animation
-- Track mouse position via a throttled `mousemove` listener
-- Absolute-positioned particles with CSS transitions for fade/fall
-- Keep particle count capped to avoid performance issues
+**Night Mode (9pm-6am):** Denser/brighter starfield, crescent moon, fireflies, muted palette, sleeping lamb with Zzz particles and wake-on-click yawn animation, whisper-style marquee.
 
----
-
-### 2. Seasonal / Time-Based Content
-
-**What:** The site dynamically changes based on the time of day, day of week, and holidays. Night mode is the star feature.
-
-**Details:**
-
-**Night Mode (9pm - 6am local time):**
-- Stars in the starfield get brighter and more numerous
-- Background shifts to deeper, darker purple/navy
-- The lamb is sleeping: eyes closed emoji, gentle snoring animation (Zzz floating up)
-- Crescent moon and additional moon phases appear in the starfield
-- Marquee text changes to whisper-style: "shhh... the lamb is sleeping..."
-- Muted/softer neon glow on all elements (less saturated pinks, more blues)
-- Subtle firefly particles floating slowly
-- If the visitor interacts (clicks the lamb), it briefly wakes up, yawns, then goes back to sleep
-
-**Daytime Variations:**
-- Morning (6am-12pm): "Good morning!" greeting, sunrise gradient hints in background
-- Afternoon (12pm-6pm): Standard vaporwave mode (current default)
-- Evening (6pm-9pm): Sunset tones, warmer pinks and oranges mixed in
+**Daytime Variations:** Morning (sunrise warmth, greeting), Afternoon (default vaporwave), Evening (sunset tones, warmer pinks).
 
 **Holidays:**
-- Christmas (Dec 15-31): Santa hat on the lamb, snowflake particles mixed into starfield, red/green accent colors
-- Halloween (Oct 25-31): Pumpkin on the lamb, orange/purple palette shift, bat particles
-- Valentine's Day (Feb 13-15): Heart particles, extra pink everything, love-themed marquee messages
-- New Year's (Dec 31 - Jan 2): Party hat, confetti particles, "Happy New Year!" banner
-- April Fools (Apr 1): Everything is upside down, lamb is replaced with a wolf in sheep's clothing
+- Halloween (Oct 25-31): Pumpkin costume, orange/purple palette, bat particles
+- Christmas (Dec 15-31): Santa hat costume, red/green palette, snowflake particles
+- Valentine's Day (Feb 13-15): Heart costume, extra pink palette, heart particles
+- St. Patrick's Day (Mar 15-17): Shamrock costume, green/gold palette, clover particles
+- Easter (variable date, computed): Chick costume, pastel palette, egg particles
+- Cinco de Mayo (May 3-5): Party costume, red/white/green palette, fiesta confetti
 
-**Weekends:**
-- "It's the weekend!" special marquee messages
-- Lamb wears sunglasses
+**Weekends:** Sunglasses costume, "It's the weekend!" marquee.
 
-**Rare Events:**
-- 1% chance per visit of a "Golden Lamb" appearing -- sparkly gold version that triggers a special animation cascade
-
-**Implementation notes:**
-- New `useTimeOfDay` hook that returns current period (morning/afternoon/evening/night) and active holidays
-- New `useSeasonalTheme` hook that computes CSS variable overrides and active decorations
-- Modify `StarField.tsx` to accept density/brightness props driven by time of day
-- Modify `LambHero.tsx` (or `LambPet.tsx`) to accept a mood/costume override from seasonal state
-- CSS custom property overrides applied at the root level for palette shifts
-- Holiday decorations as optional overlay components rendered conditionally
-- Night mode is the highest priority within this feature -- implement it first, then layer in holidays
+**Rare Events:** 1% chance golden lamb with pulsing gold glow and gold palette shift.
 
 ---
+
+## Build Now
+
+### 2a. Seasonal Enhancements
+
+**What:** Deepen the seasonal system to touch every part of the site, add smooth transitions, and improve developer experience.
+
+**Details:**
+
+- **Seasonal splash screen:** Splash screen adapts to time of day and holidays -- sleeping lamb at night, costumes on holidays, themed button text, palette-aware colors
+- **Smooth theme transitions:** CSS `@property` registrations enable 2-second palette crossfades between time periods instead of instant snaps
+- **Seasonal cursor trail auto-matching:** New "auto" mode where the trail style automatically matches the active holiday (hearts for Valentine's, etc.) -- user can still override
+- **Theme-aware starfield background:** Canvas clear color shifts with time of day (darker at night, warmer in morning/evening)
+- **Dynamic real moon phases:** Moon in the night sky reflects actual lunar phase based on date, with brighter glow on full moon nights
+- **Seasonal footer flair:** Footer gets seasonal notes and holiday-themed divider characters
+- **Dev time override:** `localStorage.setItem('devTimeOverride', ...)` lets developers force any time period or holiday for testing
 
 ### 3. Lamb Tamagotchi / Virtual Pet
 

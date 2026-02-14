@@ -1,4 +1,12 @@
-export default function Footer() {
+interface FooterProps {
+  seasonalNote?: string | null
+  footerDivider?: string
+}
+
+export default function Footer({
+  seasonalNote = null,
+  footerDivider = '·.:*~★~*:.· ·.:*~★~*:.· ·.:*~★~*:.·',
+}: FooterProps) {
   return (
     <footer className="site-footer">
       <div className="webring">
@@ -18,8 +26,11 @@ export default function Footer() {
         <span className="badge">Y2K Ready</span>
       </div>
       <div className="footer-divider">
-        ·.:*~★~*:.· ·.:*~★~*:.· ·.:*~★~*:.·
+        {footerDivider}
       </div>
+      {seasonalNote && (
+        <p className="footer-seasonal-note">{seasonalNote}</p>
+      )}
       <p className="copyright">
         © 1997-{new Date().getFullYear()} LambLollipops™ — All Rights Reserved
       </p>

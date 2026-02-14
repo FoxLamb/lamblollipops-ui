@@ -13,7 +13,7 @@ function App() {
   const [entered, setEntered] = useState(false)
   const theme = useSeasonalTheme()
 
-  // Apply CSS variable overrides to document root
+  // Apply CSS variable overrides to document root (runs for both splash and main site)
   useEffect(() => {
     const root = document.documentElement
     const entries = Object.entries(theme.cssVariables)
@@ -23,7 +23,6 @@ function App() {
     }
 
     return () => {
-      // Clean up -- remove overrides so defaults take over
       for (const [prop] of entries) {
         root.style.removeProperty(prop)
       }
@@ -35,10 +34,16 @@ function App() {
   }, [])
 
   if (!entered) {
-    return <SplashScreen onEnter={handleEnter} />
+    return (
+      <SplashScreen
+        onEnter={handleEnter}
+        lambMood={theme.lambMood}
+        lambCostume={theme.lambCostume}
+      />
+    )
   }
 
-  const { starfieldConfig, lambMood, lambCostume, marqueeOverride, decorationParticles } = theme
+  const { starfieldConfig, lambMood, lambCostume, marqueeOverride, decorationParticles, seasonalTrailStyle, footerNote, footerDivider } = theme
 
   return (
     <div className="site-wrapper">
@@ -47,8 +52,10 @@ function App() {
         brightness={starfieldConfig.brightness}
         showMoon={starfieldConfig.showMoon}
         showFireflies={starfieldConfig.showFireflies}
+        backgroundColor={starfieldConfig.backgroundColor}
+        moonPhase={starfieldConfig.moonPhase}
       />
-      <CursorTrail />
+      <CursorTrail seasonalStyle={seasonalTrailStyle} />
       {decorationParticles && <HolidayOverlay type={decorationParticles} />}
 
       <header className="site-header">
@@ -93,7 +100,7 @@ function App() {
         overrideText={marqueeOverride}
       />
 
-      <Footer />
+      <Footer seasonalNote={footerNote} footerDivider={footerDivider} />
     </div>
   )
 }

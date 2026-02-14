@@ -5,6 +5,8 @@ interface StarFieldProps {
   brightness?: number
   showMoon?: boolean
   showFireflies?: boolean
+  backgroundColor?: string
+  moonPhase?: number // 0-1 float (0 = new moon, 0.5 = full moon)
 }
 
 interface Star {
@@ -26,16 +28,24 @@ interface Firefly {
   glowSpeed: number
 }
 
+// Parse "rgb(r, g, b)" string to [r, g, b]
+function parseRgb(color: string): [number, number, number] {
+  const match = color.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/)
+  if (match) return [parseInt(match[1]), parseInt(match[2]), parseInt(match[3])]
+  return [10, 0, 30] // default fallback
+}
+
 export default function StarField({
   density = 1,
   brightness = 1,
   showMoon = false,
   showFireflies = false,
+  backgroundColor = 'rgb(10, 0, 30)',
+  moonPhase = 0.25,
 }: StarFieldProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  // Store props in refs so the animation loop can read current values
-  const propsRef = useRef({ density, brightness, showMoon, showFireflies })
-  propsRef.current = { density, brightness, showMoon, showFireflies }
+  const propsRef = useRef({ density, brightness, showMoon, showFireflies, backgroundColor, moonPhase })
+  propsRef.current = { density, brightness, showMoon, showFireflies, backgroundColor, moonPhase }
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -90,30 +100,46 @@ export default function StarField({
     const drawMoon = () => {
       if (!propsRef.current.showMoon) return
 
+      const phase = propsRef.current.moonPhase // 0-1
       const moonX = canvas.width - 100
       const moonY = 80
       const moonR = 30
 
-      // Outer glow
-      const glow = ctx.createRadialGradient(moonX, moonY, moonR * 0.5, moonX, moonY, moonR * 3)
-      glow.addColorStop(0, 'rgba(255, 255, 200, 0.08)')
+      // Phase determines shadow offset and glow intensity
+      // 0 = new moon (shadow covers all), 0.5 = full moon (no shadow)
+      const fullness = 1 - Math.abs(phase - 0.5) * 2 // 0 at new, 1 at full
+      const glowIntensity = 0.04 + fullness * 0.08
+
+      // Outer glow (brighter on full moon)
+      const glow = ctx.createRadialGradient(moonX, moonY, moonR * 0.5, moonX, moonY, moonR * (2.5 + fullness))
+      glow.addColorStop(0, `rgba(255, 255, 200, ${glowIntensity})`)
       glow.addColorStop(1, 'rgba(255, 255, 200, 0)')
       ctx.fillStyle = glow
       ctx.beginPath()
-      ctx.arc(moonX, moonY, moonR * 3, 0, Math.PI * 2)
+      ctx.arc(moonX, moonY, moonR * (2.5 + fullness), 0, Math.PI * 2)
       ctx.fill()
 
       // Moon body
-      ctx.fillStyle = 'rgba(255, 255, 220, 0.9)'
+      const bodyAlpha = 0.5 + fullness * 0.45
+      ctx.fillStyle = `rgba(255, 255, 220, ${bodyAlpha})`
       ctx.beginPath()
       ctx.arc(moonX, moonY, moonR, 0, Math.PI * 2)
       ctx.fill()
 
-      // Crescent shadow (offset circle to create crescent)
-      ctx.fillStyle = 'rgba(10, 0, 30, 0.95)'
-      ctx.beginPath()
-      ctx.arc(moonX + 12, moonY - 4, moonR * 0.85, 0, Math.PI * 2)
-      ctx.fill()
+      // Shadow to create phase shape (skip on full moon)
+      if (fullness < 0.95) {
+        const [bgR, bgG, bgB] = parseRgb(propsRef.current.backgroundColor)
+        // Shadow offset: max offset at new moon, zero at full
+        // Direction: waxing (phase < 0.5) shadow from right, waning (phase > 0.5) shadow from left
+        const shadowOffset = (1 - fullness) * moonR * 0.9
+        const shadowDirection = phase < 0.5 ? 1 : -1
+        const shadowX = moonX + shadowOffset * shadowDirection
+
+        ctx.fillStyle = `rgba(${bgR}, ${bgG}, ${bgB}, 0.95)`
+        ctx.beginPath()
+        ctx.arc(shadowX, moonY - 2, moonR * (0.75 + (1 - fullness) * 0.15), 0, Math.PI * 2)
+        ctx.fill()
+      }
     }
 
     const drawFireflies = () => {
@@ -159,8 +185,9 @@ export default function StarField({
 
     const animate = () => {
       const b = propsRef.current.brightness
+      const [bgR, bgG, bgB] = parseRgb(propsRef.current.backgroundColor)
 
-      ctx.fillStyle = 'rgba(10, 0, 30, 0.15)'
+      ctx.fillStyle = `rgba(${bgR}, ${bgG}, ${bgB}, 0.15)`
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
       for (const star of stars) {
@@ -202,7 +229,7 @@ export default function StarField({
     initStars()
     initFireflies()
     // Clear canvas fully once before starting animation
-    ctx.fillStyle = 'rgb(10, 0, 30)'
+    ctx.fillStyle = propsRef.current.backgroundColor
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     animate()
 
@@ -217,7 +244,7 @@ export default function StarField({
       cancelAnimationFrame(animationId)
       window.removeEventListener('resize', handleResize)
     }
-  }, [density, brightness, showMoon, showFireflies])
+  }, [density, brightness, showMoon, showFireflies, backgroundColor, moonPhase])
 
   return <canvas ref={canvasRef} className="starfield-canvas" />
 }

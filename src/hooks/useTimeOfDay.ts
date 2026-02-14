@@ -98,6 +98,23 @@ function getIsGoldenLamb(): boolean {
   }
 }
 
+interface DevTimeOverride {
+  period?: TimePeriod
+  holidays?: HolidayId[]
+  isWeekend?: boolean
+  isGoldenLamb?: boolean
+}
+
+function getDevOverride(): DevTimeOverride | null {
+  try {
+    const raw = localStorage.getItem('devTimeOverride')
+    if (!raw) return null
+    return JSON.parse(raw) as DevTimeOverride
+  } catch {
+    return null
+  }
+}
+
 function computeState(): TimeOfDayState {
   const now = new Date()
   const hour = now.getHours()
@@ -106,12 +123,25 @@ function computeState(): TimeOfDayState {
   const day = now.getDate()
   const dayOfWeek = now.getDay() // 0=Sun, 6=Sat
 
-  return {
+  const base: TimeOfDayState = {
     period: getPeriod(hour),
     activeHolidays: getActiveHolidays(month, day, year),
     isWeekend: dayOfWeek === 0 || dayOfWeek === 6,
     isGoldenLamb: getIsGoldenLamb(),
   }
+
+  // Dev override: localStorage.setItem('devTimeOverride', JSON.stringify({ period: 'night' }))
+  const override = getDevOverride()
+  if (override) {
+    return {
+      period: override.period ?? base.period,
+      activeHolidays: override.holidays ?? base.activeHolidays,
+      isWeekend: override.isWeekend ?? base.isWeekend,
+      isGoldenLamb: override.isGoldenLamb ?? base.isGoldenLamb,
+    }
+  }
+
+  return base
 }
 
 export function useTimeOfDay(): TimeOfDayState {

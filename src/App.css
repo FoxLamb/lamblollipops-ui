@@ -2,6 +2,61 @@
    LambLollipops - Retro 90s Vaporwave Styles
    ============================================ */
 
+/* --- @property registrations for smooth color transitions --- */
+@property --pink {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ff71ce;
+}
+
+@property --cyan {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #01cdfe;
+}
+
+@property --purple {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #b967ff;
+}
+
+@property --yellow {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #fffb96;
+}
+
+@property --green {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #05ffa1;
+}
+
+@property --deep-purple {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1a002e;
+}
+
+@property --dark-bg {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0a001e;
+}
+
+@property --text-primary {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #e0d0ff;
+}
+
+@property --border-glow {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ff71ce;
+}
+
 /* --- CSS Variables --- */
 :root {
   --pink: #ff71ce;
@@ -16,6 +71,18 @@
   --border-glow: #ff71ce;
   --font-pixel: 'Press Start 2P', monospace;
   --font-retro: 'VT323', monospace;
+
+  /* Smooth 2s crossfade when seasonal theme changes palette */
+  transition:
+    --pink 2s ease,
+    --cyan 2s ease,
+    --purple 2s ease,
+    --yellow 2s ease,
+    --green 2s ease,
+    --deep-purple 2s ease,
+    --dark-bg 2s ease,
+    --text-primary 2s ease,
+    --border-glow 2s ease;
 }
 
 /* --- Reset & Base --- */
@@ -73,7 +140,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(ellipse at center, #1a0033 0%, #0a001e 50%, #000010 100%);
+  background: radial-gradient(ellipse at center, var(--deep-purple) 0%, var(--dark-bg) 50%, #000010 100%);
   z-index: 9999;
 }
 
@@ -117,10 +184,54 @@ a:hover {
   }
 }
 
+.splash-lamb-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
 .splash-lamb {
   font-size: 6rem;
   animation: splash-bounce 2s ease-in-out infinite;
   filter: drop-shadow(0 0 20px var(--pink));
+}
+
+.splash-lamb--sleeping {
+  animation: splash-sleep-rock 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 15px rgba(100, 100, 180, 0.4));
+}
+
+@keyframes splash-sleep-rock {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-5px) rotate(3deg); }
+}
+
+.splash-lamb--golden {
+  filter:
+    drop-shadow(0 0 30px rgba(255, 215, 0, 0.8))
+    drop-shadow(0 0 60px rgba(255, 215, 0, 0.5));
+  animation: splash-golden-pulse 2s ease-in-out infinite;
+}
+
+@keyframes splash-golden-pulse {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-12px) scale(1.05); }
+}
+
+.splash-costume {
+  position: absolute;
+  top: -0.3rem;
+  right: -0.8rem;
+  font-size: 2.5rem;
+  z-index: 3;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4));
+}
+
+.splash-zzz {
+  position: absolute;
+  top: -0.5rem;
+  right: -1.5rem;
+  pointer-events: none;
 }
 
 @keyframes splash-bounce {
@@ -556,6 +667,16 @@ a:hover {
   font-size: 1.2rem;
   letter-spacing: 0.3em;
   margin: 1rem 0;
+}
+
+.footer-seasonal-note {
+  font-family: var(--font-retro);
+  font-size: 1.1rem;
+  color: var(--cyan);
+  font-style: italic;
+  margin-bottom: 0.75rem;
+  opacity: 0.8;
+  text-shadow: 0 0 6px rgba(1, 205, 254, 0.3);
 }
 
 .copyright {

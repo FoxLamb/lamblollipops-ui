@@ -22,11 +22,15 @@ export type DecorationParticleType =
   | 'fiesta'
   | null
 
+export type SeasonalTrailStyle = 'sparkles' | 'hearts' | 'lollipops' | 'rainbow' | null
+
 export interface StarfieldConfig {
   density: number
   brightness: number
   showMoon: boolean
   showFireflies: boolean
+  backgroundColor: string
+  moonPhase: number // 0-1 float (0 = new moon, 0.5 = full moon)
 }
 
 export interface SeasonalTheme {
@@ -36,6 +40,9 @@ export interface SeasonalTheme {
   lambCostume: string | null
   marqueeOverride: string | null
   decorationParticles: DecorationParticleType
+  seasonalTrailStyle: SeasonalTrailStyle
+  footerNote: string | null
+  footerDivider: string
 }
 
 // --- Palette definitions ---
@@ -159,18 +166,119 @@ const HOLIDAY_COSTUMES: Record<HolidayId, string> = {
   cincodemayo: '🎊',
 }
 
+// --- Moon phase computation ---
+
+// Known new moon reference: Jan 6, 2000 18:14 UTC
+const NEW_MOON_REF = Date.UTC(2000, 0, 6, 18, 14, 0)
+const SYNODIC_MONTH_MS = 29.53058770576 * 24 * 60 * 60 * 1000
+
+function getMoonPhase(): number {
+  const now = Date.now()
+  const daysSinceRef = (now - NEW_MOON_REF) / SYNODIC_MONTH_MS
+  return daysSinceRef - Math.floor(daysSinceRef) // 0-1 fraction
+}
+
+// --- Seasonal trail style ---
+
+function getSeasonalTrailStyle(holidays: HolidayId[], period: TimePeriod): SeasonalTrailStyle {
+  if (holidays.includes('valentines')) return 'hearts'
+  if (holidays.includes('halloween')) return 'lollipops'
+  if (holidays.includes('christmas')) return 'sparkles'
+  if (holidays.includes('stpatricks')) return 'rainbow'
+  if (holidays.includes('easter')) return 'rainbow'
+  if (holidays.includes('cincodemayo')) return 'rainbow'
+  if (period === 'night') return 'sparkles'
+  return null
+}
+
+// --- Footer content ---
+
+const HOLIDAY_FOOTER_NOTES: Record<HolidayId, string> = {
+  christmas: 'Wishing you a merry Christmas from the lamb',
+  halloween: 'Beware of things that go baa in the night',
+  valentines: 'The lamb sends you love and lollipops',
+  stpatricks: 'May the luck of the lamb be with you',
+  easter: 'Have an egg-cellent Easter weekend',
+  cincodemayo: 'Viva la fiesta, viva los lollipops',
+}
+
+const PERIOD_FOOTER_NOTES: Record<TimePeriod, string | null> = {
+  morning: 'A fresh morning in cyberspace',
+  afternoon: null,
+  evening: 'A cozy evening in cyberspace',
+  night: 'A quiet night in cyberspace... the lamb dreams of lollipops',
+}
+
+const HOLIDAY_FOOTER_DIVIDERS: Record<HolidayId, string> = {
+  christmas: '❄.:*~🎄~*:.❄ ❄.:*~🎄~*:.❄ ❄.:*~🎄~*:.❄',
+  halloween: '🎃.:*~👻~*:.🎃 🎃.:*~👻~*:.🎃 🎃.:*~👻~*:.🎃',
+  valentines: '💕.:*~❤️~*:.💕 💕.:*~❤️~*:.💕 💕.:*~❤️~*:.💕',
+  stpatricks: '☘️.:*~🍀~*:.☘️ ☘️.:*~🍀~*:.☘️ ☘️.:*~🍀~*:.☘️',
+  easter: '🐣.:*~🥚~*:.🐣 🐣.:*~🥚~*:.🐣 🐣.:*~🥚~*:.🐣',
+  cincodemayo: '🎊.:*~🌮~*:.🎊 🎊.:*~🌮~*:.🎊 🎊.:*~🌮~*:.🎊',
+}
+
+const DEFAULT_FOOTER_DIVIDER = '·.:*~★~*:.· ·.:*~★~*:.· ·.:*~★~*:.·'
+
+function getFooterNote(period: TimePeriod, holidays: HolidayId[]): string | null {
+  for (const h of holidays) {
+    if (HOLIDAY_FOOTER_NOTES[h]) return HOLIDAY_FOOTER_NOTES[h]
+  }
+  return PERIOD_FOOTER_NOTES[period]
+}
+
+function getFooterDivider(holidays: HolidayId[]): string {
+  for (const h of holidays) {
+    if (HOLIDAY_FOOTER_DIVIDERS[h]) return HOLIDAY_FOOTER_DIVIDERS[h]
+  }
+  return DEFAULT_FOOTER_DIVIDER
+}
+
 // --- Theme computation ---
 
 function getStarfieldConfig(period: TimePeriod): StarfieldConfig {
+  const moonPhase = getMoonPhase()
+  // Full moon (near 0.5) gets a brightness boost
+  const isFullMoonish = Math.abs(moonPhase - 0.5) < 0.1
+  const fullMoonBoost = isFullMoonish ? 0.2 : 0
+
   switch (period) {
     case 'night':
-      return { density: 1.5, brightness: 1.3, showMoon: true, showFireflies: true }
+      return {
+        density: 1.5,
+        brightness: 1.3 + fullMoonBoost,
+        showMoon: true,
+        showFireflies: true,
+        backgroundColor: 'rgb(3, 0, 12)',
+        moonPhase,
+      }
     case 'evening':
-      return { density: 1.2, brightness: 1.1, showMoon: false, showFireflies: false }
+      return {
+        density: 1.2,
+        brightness: 1.1,
+        showMoon: false,
+        showFireflies: false,
+        backgroundColor: 'rgb(12, 2, 25)',
+        moonPhase,
+      }
     case 'morning':
-      return { density: 0.8, brightness: 0.9, showMoon: false, showFireflies: false }
+      return {
+        density: 0.8,
+        brightness: 0.9,
+        showMoon: false,
+        showFireflies: false,
+        backgroundColor: 'rgb(15, 5, 35)',
+        moonPhase,
+      }
     default:
-      return { density: 1, brightness: 1, showMoon: false, showFireflies: false }
+      return {
+        density: 1,
+        brightness: 1,
+        showMoon: false,
+        showFireflies: false,
+        backgroundColor: 'rgb(10, 0, 30)',
+        moonPhase,
+      }
   }
 }
 
@@ -282,5 +390,8 @@ export function useSeasonalTheme(): SeasonalTheme {
     lambCostume: getLambCostume(activeHolidays, isWeekend),
     marqueeOverride: getMarqueeOverride(period, activeHolidays, isWeekend),
     decorationParticles: getDecorationParticles(activeHolidays),
+    seasonalTrailStyle: getSeasonalTrailStyle(activeHolidays, period),
+    footerNote: getFooterNote(period, activeHolidays),
+    footerDivider: getFooterDivider(activeHolidays),
   }), [period, activeHolidays, isWeekend, isGoldenLamb])
 }

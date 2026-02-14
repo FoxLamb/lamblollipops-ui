@@ -6,26 +6,17 @@ interface LambHeroProps {
   costume?: string | null
 }
 
-// Map moods to lamb emoji or replacement
-function getLambEmoji(mood: LambMood): string {
-  switch (mood) {
-    case 'sleeping': return '🐑'
-    case 'upsidedown': return '🐺'  // April Fools -- wolf in sheep's clothing
-    case 'golden': return '🐑'
-    default: return '🐑'
-  }
-}
-
 // Caption text by mood
 function getCaptionText(mood: LambMood): string {
   switch (mood) {
     case 'sleeping': return '🌙 shhh... the lamb is sleeping... 🌙'
     case 'golden': return '✨ THE GOLDEN LAMB ✨ You are truly blessed! ✨'
-    case 'upsidedown': return '🐺 Wait... something seems off... 🐺'
     case 'santa': return '🎅 Ho ho ho! Merry Christmas! 🎄'
     case 'pumpkin': return '🎃 Spooky lamb says BOO! 👻'
     case 'hearts': return '💕 The lamb loves you! Happy Valentine\'s! 💕'
-    case 'party': return '🎉 Happy New Year! Party lamb! 🎉'
+    case 'shamrock': return '☘️ Feeling lucky? The lamb found a four-leaf clover! ☘️'
+    case 'bunny': return '🐣 Hoppy Easter! The lamb found all the eggs! 🥚'
+    case 'fiesta': return '🎊 Feliz Cinco de Mayo! Fiesta lamb! 🌮'
     case 'sunglasses': return '😎 Weekend vibes! The lamb is chilling! 😎'
     default: return '★ Click the lamb for sparkles! ★'
   }
@@ -78,13 +69,11 @@ export default function LambHero({ mood = 'default', costume = null }: LambHeroP
 
   const isSleeping = mood === 'sleeping' && !isAwake
   const isYawning = mood === 'sleeping' && isAwake
-  const lambEmoji = getLambEmoji(mood)
 
   // Build CSS classes for the lamb section
   const sectionClasses = [
     'section-box',
     'lamb-hero-section',
-    mood === 'upsidedown' ? 'lamb-upsidedown' : '',
   ].filter(Boolean).join(' ')
 
   // Build CSS classes for the lamb emoji
@@ -104,10 +93,10 @@ export default function LambHero({ mood = 'default', costume = null }: LambHeroP
         <div className="sparkle-ring sparkle-ring-3">★</div>
         <div className="sparkle-ring sparkle-ring-4">☆</div>
         <div className="lamb-image-wrapper">
-          <div className={emojiClasses}>{lambEmoji}</div>
+          <div className={emojiClasses}>🐑</div>
 
           {/* Costume overlay */}
-          {costume && mood !== 'upsidedown' && (
+          {costume && (
             <span className="lamb-costume" aria-hidden="true">{costume}</span>
           )}
 

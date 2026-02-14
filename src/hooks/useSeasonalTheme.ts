@@ -8,15 +8,18 @@ export type LambMood =
   | 'santa'
   | 'pumpkin'
   | 'hearts'
-  | 'party'
-  | 'upsidedown'
+  | 'shamrock'
+  | 'bunny'
+  | 'fiesta'
   | 'golden'
 
 export type DecorationParticleType =
   | 'snowflakes'
   | 'bats'
   | 'hearts'
-  | 'confetti'
+  | 'clovers'
+  | 'eggs'
+  | 'fiesta'
   | null
 
 export interface StarfieldConfig {
@@ -33,7 +36,6 @@ export interface SeasonalTheme {
   lambCostume: string | null
   marqueeOverride: string | null
   decorationParticles: DecorationParticleType
-  isAprilFools: boolean
 }
 
 // --- Palette definitions ---
@@ -91,10 +93,31 @@ const VALENTINES_VARS: Record<string, string> = {
   '--border-glow': '#ff1493',
 }
 
-const NEWYEAR_VARS: Record<string, string> = {
+const STPATRICKS_VARS: Record<string, string> = {
+  '--pink': '#00cc66',
+  '--cyan': '#32cd32',
+  '--purple': '#228b22',
+  '--green': '#00ff7f',
   '--yellow': '#ffd700',
-  '--cyan': '#c0c0c0',
-  '--pink': '#ff71ce',
+  '--border-glow': '#00cc66',
+}
+
+const EASTER_VARS: Record<string, string> = {
+  '--pink': '#ffb6c1',
+  '--cyan': '#87ceeb',
+  '--purple': '#dda0dd',
+  '--yellow': '#fffacd',
+  '--green': '#98fb98',
+  '--border-glow': '#dda0dd',
+}
+
+const CINCODEMAYO_VARS: Record<string, string> = {
+  '--pink': '#ff4040',
+  '--cyan': '#ffffff',
+  '--purple': '#cc33cc',
+  '--green': '#00a550',
+  '--yellow': '#ffcc00',
+  '--border-glow': '#ff4040',
 }
 
 const GOLDEN_VARS: Record<string, string> = {
@@ -118,8 +141,9 @@ const HOLIDAY_MARQUEE: Record<HolidayId, string> = {
   christmas: '🎄 Merry Christmas from LambLollipops! 🎄 Ho ho ho! 🎅 Jingle all the way through cyberspace! 🎄 May your holidays be sweet! 🎄',
   halloween: '🎃 Happy Halloween! 🎃 Spooky lambs and haunted lollipops! 👻 Trick or treat in cyberspace! 🎃 Boo! 🎃',
   valentines: '💕 Happy Valentine\'s Day! 💕 Love is in the cyberspace air! 💕 Sending sweet lollipop kisses! 💕 Be mine, dear visitor! 💕',
-  newyear: '🎆 Happy New Year! 🎆 Wishing you the sweetest year yet! 🎉 Party like it\'s 1999! 🎆 New year, new lollipops! 🎆',
-  aprilfools: '🃏 Nothing is as it seems... 🃏 Or is it? 🃏 April Fools! Everything is upside down! 🃏 Trust no lamb! 🃏',
+  stpatricks: '☘️ Happy St. Patrick\'s Day! ☘️ Feeling lucky, are we? ☘️ May the lollipops be ever in your favor! ☘️ Top o\' the morning! ☘️',
+  easter: '🐣 Happy Easter! 🐣 The Easter Lamb has arrived! 🥚 Egg hunt in cyberspace! 🐰 Hop along and find the lollipops! 🐣',
+  cincodemayo: '🎊 Feliz Cinco de Mayo! 🎊 Viva LambLollipops! 🌮 Fiesta time in cyberspace! 🎉 Let\'s celebrate! 🎊',
 }
 
 const WEEKEND_MARQUEE = '🎉 It\'s the weekend! 🎉 Time to party with LambLollipops! 🎉 No work, all vibes! 🎉 Weekend warrior mode activated! 🎉'
@@ -130,8 +154,9 @@ const HOLIDAY_COSTUMES: Record<HolidayId, string> = {
   christmas: '🎅',
   halloween: '🎃',
   valentines: '💘',
-  newyear: '🎉',
-  aprilfools: '🐺',
+  stpatricks: '☘️',
+  easter: '🐣',
+  cincodemayo: '🎊',
 }
 
 // --- Theme computation ---
@@ -159,11 +184,12 @@ function getLambMood(
   if (isGolden) return 'golden'
 
   // Holiday costumes (priority: first active holiday wins)
-  if (holidays.includes('aprilfools')) return 'upsidedown'
   if (holidays.includes('christmas')) return 'santa'
   if (holidays.includes('halloween')) return 'pumpkin'
   if (holidays.includes('valentines')) return 'hearts'
-  if (holidays.includes('newyear')) return 'party'
+  if (holidays.includes('stpatricks')) return 'shamrock'
+  if (holidays.includes('easter')) return 'bunny'
+  if (holidays.includes('cincodemayo')) return 'fiesta'
 
   // Night mode
   if (period === 'night') return 'sleeping'
@@ -186,7 +212,9 @@ function getDecorationParticles(holidays: HolidayId[]): DecorationParticleType {
   if (holidays.includes('christmas')) return 'snowflakes'
   if (holidays.includes('halloween')) return 'bats'
   if (holidays.includes('valentines')) return 'hearts'
-  if (holidays.includes('newyear')) return 'confetti'
+  if (holidays.includes('stpatricks')) return 'clovers'
+  if (holidays.includes('easter')) return 'eggs'
+  if (holidays.includes('cincodemayo')) return 'fiesta'
   return null
 }
 
@@ -234,7 +262,9 @@ function getCssVariables(
   if (holidays.includes('christmas')) vars = { ...vars, ...CHRISTMAS_VARS }
   if (holidays.includes('halloween')) vars = { ...vars, ...HALLOWEEN_VARS }
   if (holidays.includes('valentines')) vars = { ...vars, ...VALENTINES_VARS }
-  if (holidays.includes('newyear')) vars = { ...vars, ...NEWYEAR_VARS }
+  if (holidays.includes('stpatricks')) vars = { ...vars, ...STPATRICKS_VARS }
+  if (holidays.includes('easter')) vars = { ...vars, ...EASTER_VARS }
+  if (holidays.includes('cincodemayo')) vars = { ...vars, ...CINCODEMAYO_VARS }
 
   // Golden overrides everything
   if (isGolden) vars = { ...vars, ...GOLDEN_VARS }
@@ -252,6 +282,5 @@ export function useSeasonalTheme(): SeasonalTheme {
     lambCostume: getLambCostume(activeHolidays, isWeekend),
     marqueeOverride: getMarqueeOverride(period, activeHolidays, isWeekend),
     decorationParticles: getDecorationParticles(activeHolidays),
-    isAprilFools: activeHolidays.includes('aprilfools'),
   }), [period, activeHolidays, isWeekend, isGoldenLamb])
 }

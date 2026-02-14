@@ -38,10 +38,10 @@ function App() {
     return <SplashScreen onEnter={handleEnter} />
   }
 
-  const { starfieldConfig, lambMood, lambCostume, marqueeOverride, decorationParticles, isAprilFools } = theme
+  const { starfieldConfig, lambMood, lambCostume, marqueeOverride, decorationParticles } = theme
 
   return (
-    <div className={`site-wrapper${isAprilFools ? ' april-fools' : ''}`}>
+    <div className="site-wrapper">
       <StarField
         density={starfieldConfig.density}
         brightness={starfieldConfig.brightness}

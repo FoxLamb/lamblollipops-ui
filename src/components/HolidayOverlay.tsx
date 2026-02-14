@@ -10,7 +10,7 @@ interface ParticleConfig {
   chars: string[]
   className: string
   durationRange: [number, number] // seconds [min, max]
-  isConfetti?: boolean
+  isFiesta?: boolean
 }
 
 const PARTICLE_CONFIGS: Record<NonNullable<DecorationParticleType>, ParticleConfig> = {
@@ -32,18 +32,31 @@ const PARTICLE_CONFIGS: Record<NonNullable<DecorationParticleType>, ParticleConf
     className: 'holiday-particle--heart',
     durationRange: [7, 15],
   },
-  confetti: {
-    count: 40,
+  clovers: {
+    count: 25,
+    chars: ['☘️', '🍀', '⭐', '🌟', '✨'],
+    className: 'holiday-particle--clover',
+    durationRange: [6, 12],
+  },
+  eggs: {
+    count: 18,
+    chars: ['🥚', '🐣', '🐰', '🌷', '🐥'],
+    className: 'holiday-particle--egg',
+    durationRange: [7, 14],
+  },
+  fiesta: {
+    count: 35,
     chars: [],
-    className: 'holiday-particle--confetti',
+    className: 'holiday-particle--fiesta',
     durationRange: [4, 10],
-    isConfetti: true,
+    isFiesta: true,
   },
 }
 
-const CONFETTI_COLORS = [
-  '#ff71ce', '#01cdfe', '#b967ff', '#fffb96', '#05ffa1',
-  '#ff4444', '#ffd700', '#ff69b4', '#00ff88', '#ff8c00',
+const FIESTA_COLORS = [
+  '#ce1126', '#006847', '#ffffff', // Mexican flag
+  '#ffcc00', '#ff6600', '#cc33cc', // Festive
+  '#ff1493', '#00ff88', '#01cdfe',
 ]
 
 export default function HolidayOverlay({ type }: HolidayOverlayProps) {
@@ -54,13 +67,13 @@ export default function HolidayOverlay({ type }: HolidayOverlayProps) {
       const duration = config.durationRange[0] + Math.random() * (config.durationRange[1] - config.durationRange[0])
       const delay = Math.random() * duration // stagger start times
       const left = Math.random() * 100 // percent
-      const char = config.isConfetti
+      const char = config.isFiesta
         ? ''
         : config.chars[Math.floor(Math.random() * config.chars.length)]
-      const bgColor = config.isConfetti
-        ? CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)]
+      const bgColor = config.isFiesta
+        ? FIESTA_COLORS[Math.floor(Math.random() * FIESTA_COLORS.length)]
         : undefined
-      const size = config.isConfetti
+      const size = config.isFiesta
         ? 4 + Math.random() * 6
         : undefined
 

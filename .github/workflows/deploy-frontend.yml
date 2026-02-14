@@ -1,0 +1,77 @@
+name: Deploy LambLollipops UI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'index.html'
+      - 'vite.config.ts'
+      - '.github/workflows/deploy-frontend.yml'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  NODE_VERSION: '20'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: package-lock.json
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        role-session-name: GitHubActions-LambLollipops-Frontend
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Get infrastructure outputs
+      id: infra
+      run: |
+        # These values should be set as repository variables after terraform apply
+        echo "s3_bucket=${{ vars.S3_BUCKET }}" >> $GITHUB_OUTPUT
+        echo "cloudfront_id=${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" >> $GITHUB_OUTPUT
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build application
+      run: npx vite build
+
+    - name: Sync to S3
+      run: |
+        echo "Syncing to S3 bucket: ${{ steps.infra.outputs.s3_bucket }}"
+        aws s3 sync dist/ s3://${{ steps.infra.outputs.s3_bucket }} --delete
+        echo "S3 sync completed"
+
+    - name: Invalidate CloudFront cache
+      run: |
+        echo "Invalidating CloudFront cache..."
+        aws cloudfront create-invalidation \
+          --distribution-id ${{ steps.infra.outputs.cloudfront_id }} \
+          --paths "/*"
+        echo "CloudFront invalidation initiated"
+
+    - name: Deployment Summary
+      run: |
+        echo "LambLollipops UI deployment completed!"
+        echo "Live at: https://lamblollipops.com"

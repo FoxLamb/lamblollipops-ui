@@ -1,0 +1,78 @@
+name: Deploy LambLollipops UI Infrastructure
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/deploy-infrastructure.yml'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  TF_VERSION: '1.7.0'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy Infrastructure
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        role-session-name: GitHubActions-LambLollipops-Infrastructure
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Terraform Init
+      working-directory: terraform
+      run: |
+        echo "Initializing Terraform..."
+        terraform init
+
+    - name: Terraform Validate
+      working-directory: terraform
+      run: |
+        echo "Validating Terraform configuration..."
+        terraform validate
+
+    - name: Terraform Plan
+      working-directory: terraform
+      run: |
+        echo "Planning Terraform changes..."
+        terraform plan -out=tfplan
+
+    - name: Terraform Apply
+      working-directory: terraform
+      run: |
+        echo "Applying Terraform changes..."
+        terraform apply -auto-approve tfplan
+
+    - name: Output Infrastructure Details
+      working-directory: terraform
+      run: |
+        echo "LambLollipops UI infrastructure deployment completed!"
+        echo ""
+        echo "Domain: $(terraform output -raw domain_url)"
+        echo "CloudFront ID: $(terraform output -raw cloudfront_distribution_id)"
+        echo "S3 Bucket: $(terraform output -raw s3_bucket_name)"
+        echo "GitHub Actions Role ARN: $(terraform output -raw github_actions_role_arn)"
+        echo ""
+        echo "IMPORTANT: Set these as GitHub repo variables/secrets:"
+        echo "  Secret  AWS_ROLE_ARN = $(terraform output -raw github_actions_role_arn)"
+        echo "  Variable S3_BUCKET = $(terraform output -raw s3_bucket_name)"
+        echo "  Variable CLOUDFRONT_DISTRIBUTION_ID = $(terraform output -raw cloudfront_distribution_id)"

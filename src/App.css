@@ -9,10 +9,8 @@
   --purple: #b967ff;
   --yellow: #fffb96;
   --green: #05ffa1;
-  --hot-pink: #ff1493;
   --deep-purple: #1a002e;
   --dark-bg: #0a001e;
-  --neon-blue: #4d4dff;
   --text-primary: #e0d0ff;
   --text-bright: #ffffff;
   --border-glow: #ff71ce;
@@ -186,11 +184,6 @@ a:hover {
   font-size: 0.6rem;
 }
 
-.splash-browser {
-  margin-top: 1rem;
-  color: #666;
-  font-size: 0.9rem;
-}
 
 /* --- Starfield Canvas --- */
 .starfield-canvas {
@@ -258,8 +251,9 @@ a:hover {
 
 .site-title {
   font-family: var(--font-pixel);
-  font-size: clamp(1.2rem, 4vw, 2.2rem);
+  font-size: clamp(0.9rem, 3vw, 1.6rem);
   line-height: 1.4;
+  white-space: nowrap;
 }
 
 .subtitle {
@@ -384,36 +378,6 @@ a:hover {
   text-shadow: 0 0 8px rgba(255, 113, 206, 0.4);
 }
 
-/* --- Construction Banner --- */
-.construction-banner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  background: repeating-linear-gradient(
-    45deg,
-    #000,
-    #000 10px,
-    var(--yellow) 10px,
-    var(--yellow) 20px
-  );
-  padding: 0.5rem 1rem;
-  margin-bottom: 1rem;
-}
-
-.construction-text {
-  font-family: var(--font-pixel);
-  font-size: 0.7rem;
-  color: var(--dark-bg);
-  background: var(--yellow);
-  padding: 0.25rem 0.5rem;
-  animation: construction-pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes construction-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
 
 /* --- Lamb Hero --- */
 .lamb-hero-section {
@@ -502,152 +466,12 @@ a:hover {
   margin-top: 0.5rem;
 }
 
-/* --- Links Grid --- */
-.links-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 0.75rem;
-}
-
-.retro-link {
-  display: block;
-  text-align: center;
-  font-family: var(--font-pixel);
-  font-size: 0.6rem;
-  padding: 0.75rem;
-  border: 2px solid var(--purple);
-  background: rgba(185, 103, 255, 0.1);
-  color: var(--cyan);
-  transition: all 0.3s ease;
-}
-
-.retro-link:hover {
-  background: rgba(255, 113, 206, 0.2);
-  border-color: var(--pink);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(255, 113, 206, 0.3);
-}
-
-/* --- Guestbook --- */
-.guestbook-entries {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.guestbook-entry {
-  border: 1px solid var(--purple);
-  background: rgba(10, 0, 30, 0.6);
-  padding: 1rem;
-  transition: border-color 0.3s;
-}
-
-.guestbook-entry:hover {
-  border-color: var(--cyan);
-}
-
-.entry-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.entry-name {
-  font-family: var(--font-pixel);
-  font-size: 0.6rem;
-  color: var(--pink);
-}
-
-.entry-date {
-  font-size: 0.9rem;
-  color: #888;
-}
-
-.entry-message {
-  font-size: 1.2rem;
-  color: var(--text-primary);
-  margin-bottom: 0.25rem;
-}
-
-.entry-location {
-  font-size: 0.9rem;
-  color: #777;
-}
 
 /* --- Music Player --- */
 .music-player {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-}
-
-.player-controls {
-  text-align: center;
-}
-
-.player-label {
-  font-family: var(--font-pixel);
-  font-size: 0.65rem;
-  color: var(--green);
-  margin-bottom: 1rem;
-  animation: pulse-text 2s ease-in-out infinite;
-}
-
-@keyframes pulse-text {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-.player-buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.player-btn {
-  font-family: var(--font-pixel);
-  font-size: 0.7rem;
-  color: var(--text-bright);
-  background: linear-gradient(135deg, var(--purple), var(--neon-blue));
-  border: 2px solid var(--cyan);
-  padding: 0.6rem 1.5rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.player-btn:hover {
-  background: linear-gradient(135deg, var(--pink), var(--purple));
-  box-shadow: 0 0 15px rgba(1, 205, 254, 0.4);
-  transform: scale(1.05);
-}
-
-.volume-control {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.volume-label {
-  font-family: var(--font-pixel);
-  font-size: 0.55rem;
-  color: var(--cyan);
-}
-
-.volume-slider {
-  width: 100px;
-  accent-color: var(--pink);
-  cursor: pointer;
-}
-
-.player-note {
-  margin-top: 0.75rem;
-  font-size: 1.1rem;
-  color: var(--yellow);
 }
 
 .youtube-section {
@@ -666,52 +490,6 @@ a:hover {
   margin: 0 auto;
 }
 
-/* --- Visitor Counter --- */
-.visitor-counter {
-  text-align: center;
-  padding: 1.5rem;
-  border: 2px dashed var(--purple);
-  background: rgba(26, 0, 46, 0.5);
-}
-
-.counter-label {
-  font-family: var(--font-pixel);
-  font-size: 0.6rem;
-  color: var(--cyan);
-  margin-bottom: 0.75rem;
-}
-
-.counter-digits {
-  display: flex;
-  justify-content: center;
-  gap: 4px;
-}
-
-.counter-digit {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 3rem;
-  font-family: var(--font-pixel);
-  font-size: 1.2rem;
-  color: var(--green);
-  background: #000;
-  border: 1px solid #333;
-  text-shadow: 0 0 8px var(--green);
-}
-
-.counter-since {
-  font-size: 0.9rem;
-  color: #777;
-  margin-top: 0.75rem;
-}
-
-.last-updated {
-  font-size: 0.9rem;
-  color: #666;
-  margin-top: 0.25rem;
-}
 
 /* --- Footer --- */
 .site-footer {
@@ -806,7 +584,7 @@ a:hover {
   }
 
   .site-title {
-    font-size: 1rem;
+    font-size: 0.75rem;
   }
 
   .lamb-emoji {
@@ -817,19 +595,6 @@ a:hover {
     padding: 1rem;
   }
 
-  .links-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .counter-digit {
-    width: 2rem;
-    height: 2.5rem;
-    font-size: 1rem;
-  }
-
-  .player-buttons {
-    flex-direction: column;
-  }
 
   .splash-title {
     font-size: 1.2rem;

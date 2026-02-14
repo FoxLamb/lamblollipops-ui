@@ -17,10 +17,7 @@ export default function SplashScreen({ onEnter }: SplashScreenProps) {
           ★ Click to Enter ★
         </button>
         <p className="splash-warning blink">
-          ⚠ Warning: Contains music & maximum vibes ⚠
-        </p>
-        <p className="splash-browser">
-          Best viewed with Netscape Navigator 4.0 at 800x600
+          ⚠ Warning: Contains maximum vibes ⚠
         </p>
       </div>
     </div>

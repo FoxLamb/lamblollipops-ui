@@ -139,6 +139,31 @@ export default function LambHero({ mood = 'default', costume = null }: LambHeroP
           🍭 The ancient Sumerians believed that lambs held the secret to
           eternal sweetness. They were probably right.
         </p>
+        <p className="retro-text">
+          🍭 A lamb's wool can absorb up to 30% of its weight in moisture
+          without feeling wet. This is why they never drop their lollipops
+          in the rain.
+        </p>
+        <p className="retro-text">
+          🍭 Lambs can recognize up to 50 other sheep faces and remember them
+          for years. They never forget who shared a lollipop with them.
+        </p>
+        <p className="retro-text">
+          🍭 Baby lambs can walk within minutes of being born. Scientists
+          believe this is so they can get to the candy store faster.
+        </p>
+        <p className="retro-text">
+          🍭 Sheep have rectangular pupils, giving them a 340-degree field
+          of vision. They can spot a lollipop from nearly any angle.
+        </p>
+        <p className="retro-text">
+          🍭 A group of lambs is called a "flock." A group of lambs with
+          lollipops is called "a really good time."
+        </p>
+        <p className="retro-text">
+          🍭 Lambs have excellent memories and can remember how to navigate
+          a maze for up to 6 weeks. Especially if there's candy at the end.
+        </p>
       </div>
     </section>
   )

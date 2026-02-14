@@ -1,9 +1,60 @@
-import { useState } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
+import type { LambMood } from '../hooks/useSeasonalTheme'
 
-export default function LambHero() {
+interface LambHeroProps {
+  mood?: LambMood
+  costume?: string | null
+}
+
+// Map moods to lamb emoji or replacement
+function getLambEmoji(mood: LambMood): string {
+  switch (mood) {
+    case 'sleeping': return '🐑'
+    case 'upsidedown': return '🐺'  // April Fools -- wolf in sheep's clothing
+    case 'golden': return '🐑'
+    default: return '🐑'
+  }
+}
+
+// Caption text by mood
+function getCaptionText(mood: LambMood): string {
+  switch (mood) {
+    case 'sleeping': return '🌙 shhh... the lamb is sleeping... 🌙'
+    case 'golden': return '✨ THE GOLDEN LAMB ✨ You are truly blessed! ✨'
+    case 'upsidedown': return '🐺 Wait... something seems off... 🐺'
+    case 'santa': return '🎅 Ho ho ho! Merry Christmas! 🎄'
+    case 'pumpkin': return '🎃 Spooky lamb says BOO! 👻'
+    case 'hearts': return '💕 The lamb loves you! Happy Valentine\'s! 💕'
+    case 'party': return '🎉 Happy New Year! Party lamb! 🎉'
+    case 'sunglasses': return '😎 Weekend vibes! The lamb is chilling! 😎'
+    default: return '★ Click the lamb for sparkles! ★'
+  }
+}
+
+export default function LambHero({ mood = 'default', costume = null }: LambHeroProps) {
   const [sparkles, setSparkles] = useState<{ id: number; x: number; y: number }[]>([])
+  const [isAwake, setIsAwake] = useState(false)
+  const wakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const handleClick = (e: React.MouseEvent) => {
+  // Clean up wake timeout
+  useEffect(() => {
+    return () => {
+      if (wakeTimeoutRef.current) clearTimeout(wakeTimeoutRef.current)
+    }
+  }, [])
+
+  // Reset awake state when mood changes away from sleeping
+  useEffect(() => {
+    if (mood !== 'sleeping') {
+      setIsAwake(false)
+      if (wakeTimeoutRef.current) {
+        clearTimeout(wakeTimeoutRef.current)
+        wakeTimeoutRef.current = null
+      }
+    }
+  }, [mood])
+
+  const handleClick = useCallback((e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect()
     const x = e.clientX - rect.left
     const y = e.clientY - rect.top
@@ -13,10 +64,39 @@ export default function LambHero() {
     setTimeout(() => {
       setSparkles(prev => prev.filter(s => s.id !== newSparkle.id))
     }, 1000)
-  }
+
+    // Wake the sleeping lamb briefly
+    if (mood === 'sleeping' && !isAwake) {
+      setIsAwake(true)
+      if (wakeTimeoutRef.current) clearTimeout(wakeTimeoutRef.current)
+      wakeTimeoutRef.current = setTimeout(() => {
+        setIsAwake(false)
+        wakeTimeoutRef.current = null
+      }, 2500)
+    }
+  }, [mood, isAwake])
+
+  const isSleeping = mood === 'sleeping' && !isAwake
+  const isYawning = mood === 'sleeping' && isAwake
+  const lambEmoji = getLambEmoji(mood)
+
+  // Build CSS classes for the lamb section
+  const sectionClasses = [
+    'section-box',
+    'lamb-hero-section',
+    mood === 'upsidedown' ? 'lamb-upsidedown' : '',
+  ].filter(Boolean).join(' ')
+
+  // Build CSS classes for the lamb emoji
+  const emojiClasses = [
+    'lamb-emoji',
+    isSleeping ? 'lamb-sleeping' : '',
+    isYawning ? 'lamb-yawning' : '',
+    mood === 'golden' ? 'lamb-golden' : '',
+  ].filter(Boolean).join(' ')
 
   return (
-    <section className="section-box lamb-hero-section" onClick={handleClick}>
+    <section className={sectionClasses} onClick={handleClick}>
       <h2 className="section-title">~ The Lamb ~</h2>
       <div className="lamb-container">
         <div className="sparkle-ring sparkle-ring-1">✦</div>
@@ -24,7 +104,26 @@ export default function LambHero() {
         <div className="sparkle-ring sparkle-ring-3">★</div>
         <div className="sparkle-ring sparkle-ring-4">☆</div>
         <div className="lamb-image-wrapper">
-          <div className="lamb-emoji">🐑</div>
+          <div className={emojiClasses}>{lambEmoji}</div>
+
+          {/* Costume overlay */}
+          {costume && mood !== 'upsidedown' && (
+            <span className="lamb-costume" aria-hidden="true">{costume}</span>
+          )}
+
+          {/* Sleeping Zzz particles */}
+          {isSleeping && (
+            <div className="zzz-container" aria-hidden="true">
+              <span className="zzz-particle zzz-1">Z</span>
+              <span className="zzz-particle zzz-2">z</span>
+              <span className="zzz-particle zzz-3">Z</span>
+            </div>
+          )}
+
+          {/* Yawning indicator */}
+          {isYawning && (
+            <span className="lamb-yawn-text" aria-hidden="true">*yaaawn*</span>
+          )}
         </div>
         <div className="sparkle-ring sparkle-ring-5">✦</div>
         <div className="sparkle-ring sparkle-ring-6">✧</div>
@@ -39,7 +138,7 @@ export default function LambHero() {
         ))}
       </div>
       <p className="lamb-caption glow-text">
-        ★ Click the lamb for sparkles! ★
+        {getCaptionText(mood)}
       </p>
       <div className="lamb-facts">
         <p className="retro-text">

@@ -84,6 +84,48 @@ resource "aws_cloudfront_origin_access_control" "frontend" {
   signing_protocol                  = "sigv4"
 }
 
+# --- Security Response Headers ---
+
+resource "aws_cloudfront_response_headers_policy" "security" {
+  name = "${var.project_name}-${var.environment}-security-headers"
+
+  security_headers_config {
+    strict_transport_security {
+      access_control_max_age_sec = 31536000
+      include_subdomains         = true
+      preload                    = true
+      override                   = true
+    }
+
+    content_type_options {
+      override = true
+    }
+
+    frame_options {
+      frame_option = "DENY"
+      override     = true
+    }
+
+    referrer_policy {
+      referrer_policy = "strict-origin-when-cross-origin"
+      override        = true
+    }
+
+    content_security_policy {
+      content_security_policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; frame-src https://www.youtube.com; img-src 'self' data:; media-src 'self'"
+      override                = true
+    }
+  }
+
+  custom_headers_config {
+    items {
+      header   = "Permissions-Policy"
+      value    = "camera=(), microphone=(), geolocation=()"
+      override = true
+    }
+  }
+}
+
 resource "aws_cloudfront_distribution" "frontend" {
   origin {
     domain_name              = aws_s3_bucket.frontend.bucket_regional_domain_name
@@ -95,7 +137,7 @@ resource "aws_cloudfront_distribution" "frontend" {
   is_ipv6_enabled     = true
   default_root_object = "index.html"
 
-  aliases = [var.domain_name]
+  aliases = [var.domain_name, "www.${var.domain_name}"]
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
@@ -108,6 +150,8 @@ resource "aws_cloudfront_distribution" "frontend" {
         forward = "none"
       }
     }
+
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
 
     viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
@@ -152,8 +196,9 @@ resource "aws_cloudfront_distribution" "frontend" {
 # --- ACM Certificate ---
 
 resource "aws_acm_certificate" "frontend" {
-  domain_name       = var.domain_name
-  validation_method = "DNS"
+  domain_name               = var.domain_name
+  subject_alternative_names = ["www.${var.domain_name}"]
+  validation_method         = "DNS"
 
   lifecycle {
     create_before_destroy = true
@@ -202,6 +247,14 @@ resource "aws_route53_record" "frontend" {
     zone_id                = aws_cloudfront_distribution.frontend.hosted_zone_id
     evaluate_target_health = false
   }
+}
+
+resource "aws_route53_record" "frontend_www" {
+  zone_id = data.aws_route53_zone.domain.zone_id
+  name    = "www.${var.domain_name}"
+  type    = "CNAME"
+  ttl     = 300
+  records = [aws_cloudfront_distribution.frontend.domain_name]
 }
 
 # --- S3 Bucket Policy ---

@@ -36,5 +36,4 @@ npm run build  # Production build
 
 ## Music
 
-Replace `public/audio/vaporwave.mp3` with your preferred vaporwave/chiptune track.
-The placeholder is a simple tone — swap in something with actual vibes.
+The Vibe Zone section embeds a YouTube vaporwave radio stream. No local audio files are used.

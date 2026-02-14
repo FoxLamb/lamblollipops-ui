@@ -17,10 +17,9 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
-    name: Deploy Infrastructure
+  plan:
+    name: Terraform Plan
     runs-on: ubuntu-latest
-    environment: production
 
     steps:
     - name: Checkout code
@@ -55,6 +54,47 @@ jobs:
       run: |
         echo "Planning Terraform changes..."
         terraform plan -out=tfplan
+
+    - name: Upload Plan
+      uses: actions/upload-artifact@v4
+      with:
+        name: tfplan
+        path: terraform/tfplan
+        retention-days: 1
+
+  apply:
+    name: Terraform Apply
+    needs: plan
+    runs-on: ubuntu-latest
+    environment: production  # Requires manual approval via GitHub environment protection rules
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        role-session-name: GitHubActions-LambLollipops-Infrastructure
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Terraform Init
+      working-directory: terraform
+      run: |
+        echo "Initializing Terraform..."
+        terraform init
+
+    - name: Download Plan
+      uses: actions/download-artifact@v4
+      with:
+        name: tfplan
+        path: terraform
 
     - name: Terraform Apply
       working-directory: terraform

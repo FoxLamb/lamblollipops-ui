@@ -1,13 +1,34 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import SplashScreen from './components/SplashScreen'
 import StarField from './components/StarField'
+import CursorTrail from './components/CursorTrail'
+import HolidayOverlay from './components/HolidayOverlay'
 import Marquee from './components/Marquee'
 import LambHero from './components/LambHero'
 import MusicPlayer from './components/MusicPlayer'
 import Footer from './components/Footer'
+import { useSeasonalTheme } from './hooks/useSeasonalTheme'
 
 function App() {
   const [entered, setEntered] = useState(false)
+  const theme = useSeasonalTheme()
+
+  // Apply CSS variable overrides to document root
+  useEffect(() => {
+    const root = document.documentElement
+    const entries = Object.entries(theme.cssVariables)
+
+    for (const [prop, value] of entries) {
+      root.style.setProperty(prop, value)
+    }
+
+    return () => {
+      // Clean up -- remove overrides so defaults take over
+      for (const [prop] of entries) {
+        root.style.removeProperty(prop)
+      }
+    }
+  }, [theme.cssVariables])
 
   const handleEnter = useCallback(() => {
     setEntered(true)
@@ -17,9 +38,18 @@ function App() {
     return <SplashScreen onEnter={handleEnter} />
   }
 
+  const { starfieldConfig, lambMood, lambCostume, marqueeOverride, decorationParticles, isAprilFools } = theme
+
   return (
-    <div className="site-wrapper">
-      <StarField />
+    <div className={`site-wrapper${isAprilFools ? ' april-fools' : ''}`}>
+      <StarField
+        density={starfieldConfig.density}
+        brightness={starfieldConfig.brightness}
+        showMoon={starfieldConfig.showMoon}
+        showFireflies={starfieldConfig.showFireflies}
+      />
+      <CursorTrail />
+      {decorationParticles && <HolidayOverlay type={decorationParticles} />}
 
       <header className="site-header">
         <div className="header-border">
@@ -30,7 +60,10 @@ function App() {
         </div>
       </header>
 
-      <Marquee text="★ Welcome to LambLollipops! ★ The sweetest spot on the information superhighway! ★ Lambs and lollipops forever! ★ Maximum vibes detected! ★" />
+      <Marquee
+        text="★ Welcome to LambLollipops! ★ The sweetest spot on the information superhighway! ★ Lambs and lollipops forever! ★ Maximum vibes detected! ★"
+        overrideText={marqueeOverride}
+      />
 
       <main className="main-content">
         <section className="section-box">
@@ -47,7 +80,7 @@ function App() {
           </p>
         </section>
 
-        <LambHero />
+        <LambHero mood={lambMood} costume={lambCostume} />
 
         <section className="section-box">
           <h2 className="section-title">~ The Vibe Zone ~</h2>
@@ -55,7 +88,10 @@ function App() {
         </section>
       </main>
 
-      <Marquee text="✦ Thanks for visiting LambLollipops! ✦ Come back soon! ✦ Don't forget to bookmark this page! ✦ Tell your friends! ✦ See you in cyberspace! ✦" />
+      <Marquee
+        text="✦ Thanks for visiting LambLollipops! ✦ Come back soon! ✦ Don't forget to bookmark this page! ✦ Tell your friends! ✦ See you in cyberspace! ✦"
+        overrideText={marqueeOverride}
+      />
 
       <Footer />
     </div>

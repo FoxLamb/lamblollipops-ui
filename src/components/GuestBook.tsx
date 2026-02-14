@@ -39,7 +39,7 @@ const ENTRIES = [
 
 export default function GuestBook() {
   return (
-    <section className="section-box guestbook-section">
+    <section className="section-box">
       <h2 className="section-title">~ Guestbook ~</h2>
       <p className="retro-text" style={{ textAlign: 'center', marginBottom: '1rem' }}>
         Sign my guestbook! (Not really, this is purely decorative 😄)

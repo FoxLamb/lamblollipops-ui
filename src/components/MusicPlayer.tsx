@@ -52,6 +52,9 @@ interface Track {
 }
 
 const PLAYLIST: Track[] = [
+  { id: '2pApIwI3Nic', title: 'Vaporwave Mix', artist: 'VibesTV' },
+  { id: 'aJOTlE1K90k', title: 'Synthwave Retro', artist: 'Astral Throb' },
+  { id: '4xDzrJKXOOY', title: 'Synthwave Goose', artist: 'HOME' },
   { id: 'i1gE3nyQnKA', title: 'Keygen Church', artist: 'Chiptune Archive' },
   { id: 'UGFzWbLd6ZA', title: 'Best of Keygen Music', artist: 'Keygen FM' },
   { id: 'OBmM79YC-HQ', title: 'Keygen Music Mix Vol 1', artist: 'Demoscene' },

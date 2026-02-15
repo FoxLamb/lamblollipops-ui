@@ -1331,28 +1331,25 @@ a:hover {
    ═══════════════════════════════════════════════ */
 
 .keygen-skin--zunas {
-  background: rgba(26, 0, 46, 0.75);
-  backdrop-filter: blur(4px);
   border: 2px solid transparent;
+  background:
+    linear-gradient(rgba(26, 0, 46, 0.9), rgba(26, 0, 46, 0.9)) padding-box,
+    linear-gradient(45deg, var(--pink), var(--purple), var(--cyan), var(--pink)) border-box;
+  background-size: 100% 100%, 300% 300%;
+  animation: zunas-border-shift 6s linear infinite;
   color: var(--text-primary);
   position: relative;
   box-shadow:
     4px 4px 20px rgba(0, 0, 0, 0.6),
-    0 0 15px color-mix(in srgb, var(--pink) 10%, transparent),
+    0 0 20px color-mix(in srgb, var(--purple) 20%, transparent),
+    0 0 40px color-mix(in srgb, var(--pink) 10%, transparent),
     inset 0 0 30px rgba(185, 103, 255, 0.05);
-  overflow: hidden;
 }
 
-/* Animated gradient border glow (matches section-box) */
-.keygen-skin--zunas::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  background: linear-gradient(45deg, var(--pink), var(--purple), var(--cyan), var(--pink));
-  background-size: 300% 300%;
-  animation: border-glow 6s linear infinite;
-  z-index: -1;
-  opacity: 0.5;
+@keyframes zunas-border-shift {
+  0% { background-position: 0 0, 0% 50%; }
+  50% { background-position: 0 0, 100% 50%; }
+  100% { background-position: 0 0, 0% 50%; }
 }
 
 .keygen-skin--zunas .keygen-titlebar {
@@ -1397,7 +1394,7 @@ a:hover {
     radial-gradient(1px 1px at 30% 10%, rgba(255, 255, 255, 0.3), transparent),
     radial-gradient(1px 1px at 70% 90%, rgba(255, 255, 255, 0.5), transparent),
     linear-gradient(180deg, rgba(10, 0, 30, 0.9) 0%, rgba(26, 0, 46, 0.7) 100%);
-  border: 1px solid color-mix(in srgb, var(--purple) 40%, transparent);
+  border: 1px solid color-mix(in srgb, var(--purple) 50%, transparent);
   margin: 6px 8px;
   animation: keygen-zunas-stars 8s linear infinite;
 }
@@ -1442,8 +1439,10 @@ a:hover {
 }
 
 .keygen-skin--zunas .keygen-track-display {
-  background: rgba(10, 0, 30, 0.6);
-  border: 1px solid color-mix(in srgb, var(--purple) 40%, transparent);
+  background:
+    linear-gradient(rgba(10, 0, 30, 0.8), rgba(10, 0, 30, 0.8)) padding-box,
+    linear-gradient(90deg, var(--purple), var(--cyan), var(--purple)) border-box;
+  border: 1px solid transparent;
   color: var(--text-primary);
   text-shadow: 0 0 4px color-mix(in srgb, var(--cyan) 50%, transparent);
 }
@@ -1497,9 +1496,11 @@ a:hover {
 }
 
 .keygen-skin--zunas .keygen-serial-section {
-  border: 1px solid color-mix(in srgb, var(--purple) 40%, transparent);
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(10, 0, 30, 0.6), rgba(10, 0, 30, 0.6)) padding-box,
+    linear-gradient(90deg, var(--pink), var(--purple), var(--cyan)) border-box;
   margin: 4px 8px;
-  background: rgba(10, 0, 30, 0.4);
 }
 
 .keygen-skin--zunas .keygen-label {

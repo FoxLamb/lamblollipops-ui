@@ -302,17 +302,13 @@ function getLambMood(
   // Night mode
   if (period === 'night') return 'sleeping'
 
-  // Weekend
-  if (isWeekend) return 'sunglasses'
-
   return 'default'
 }
 
-function getLambCostume(holidays: HolidayId[], isWeekend: boolean): string | null {
+function getLambCostume(holidays: HolidayId[]): string | null {
   for (const h of holidays) {
     if (HOLIDAY_COSTUMES[h]) return HOLIDAY_COSTUMES[h]
   }
-  if (isWeekend) return '😎'
   return null
 }
 
@@ -387,7 +383,7 @@ export function useSeasonalTheme(): SeasonalTheme {
     cssVariables: getCssVariables(period, activeHolidays, isGoldenLamb),
     starfieldConfig: getStarfieldConfig(period),
     lambMood: getLambMood(period, activeHolidays, isWeekend, isGoldenLamb),
-    lambCostume: getLambCostume(activeHolidays, isWeekend),
+    lambCostume: getLambCostume(activeHolidays),
     marqueeOverride: getMarqueeOverride(period, activeHolidays, isWeekend),
     decorationParticles: getDecorationParticles(activeHolidays),
     seasonalTrailStyle: getSeasonalTrailStyle(activeHolidays, period),

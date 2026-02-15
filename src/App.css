@@ -1325,26 +1325,44 @@ a:hover {
 
 
 /* ═══════════════════════════════════════════════
-   SKIN 3: Zunas — Dynamic Hacker
-   Uses site CSS variables so it shifts with
-   seasonal / holiday themes automatically
+   SKIN 3: Zunas — Glass Gradient
+   Uses site CSS variables and animated gradients
+   matching the section-box glass aesthetic
    ═══════════════════════════════════════════════ */
 
 .keygen-skin--zunas {
-  background: color-mix(in srgb, var(--deep-purple) 85%, black);
-  border: 2px solid var(--border-glow);
+  background: rgba(26, 0, 46, 0.75);
+  backdrop-filter: blur(4px);
+  border: 2px solid transparent;
   color: var(--text-primary);
-  box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.6), 0 0 30px color-mix(in srgb, var(--border-glow) 15%, transparent);
+  position: relative;
+  box-shadow:
+    4px 4px 20px rgba(0, 0, 0, 0.6),
+    0 0 15px color-mix(in srgb, var(--pink) 10%, transparent),
+    inset 0 0 30px rgba(185, 103, 255, 0.05);
+  overflow: hidden;
+}
+
+/* Animated gradient border glow (matches section-box) */
+.keygen-skin--zunas::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, var(--pink), var(--purple), var(--cyan), var(--pink));
+  background-size: 300% 300%;
+  animation: border-glow 6s linear infinite;
+  z-index: -1;
+  opacity: 0.5;
 }
 
 .keygen-skin--zunas .keygen-titlebar {
-  background: linear-gradient(90deg, var(--dark-bg), var(--deep-purple), var(--dark-bg));
-  border-bottom: 1px solid var(--border-glow);
+  background: linear-gradient(90deg, rgba(10, 0, 30, 0.8), rgba(26, 0, 46, 0.6), rgba(10, 0, 30, 0.8));
+  border-bottom: 1px solid color-mix(in srgb, var(--purple) 50%, transparent);
 }
 
 .keygen-skin--zunas .keygen-titlebar-text {
-  color: var(--border-glow);
-  text-shadow: 0 0 6px var(--border-glow);
+  color: var(--purple);
+  text-shadow: 0 0 6px var(--purple);
   font-family: var(--font-pixel);
   font-size: 0.5rem;
 }
@@ -1354,15 +1372,17 @@ a:hover {
 }
 
 .keygen-skin--zunas .keygen-titlebar-btn {
-  background: var(--dark-bg);
-  border: 1px solid var(--border-glow);
-  color: var(--border-glow);
+  background: rgba(10, 0, 30, 0.6);
+  border: 1px solid color-mix(in srgb, var(--purple) 60%, transparent);
+  color: var(--purple);
   font-size: 9px;
 }
 
 .keygen-skin--zunas .keygen-titlebar-btn:hover {
-  background: var(--deep-purple);
-  text-shadow: 0 0 6px var(--border-glow);
+  background: rgba(185, 103, 255, 0.15);
+  border-color: var(--cyan);
+  color: var(--cyan);
+  text-shadow: 0 0 6px var(--cyan);
 }
 
 .keygen-skin--zunas .keygen-banner {
@@ -1376,8 +1396,8 @@ a:hover {
     radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.4), transparent),
     radial-gradient(1px 1px at 30% 10%, rgba(255, 255, 255, 0.3), transparent),
     radial-gradient(1px 1px at 70% 90%, rgba(255, 255, 255, 0.5), transparent),
-    linear-gradient(180deg, var(--dark-bg) 0%, var(--deep-purple) 100%);
-  border: 1px solid var(--border-glow);
+    linear-gradient(180deg, rgba(10, 0, 30, 0.9) 0%, rgba(26, 0, 46, 0.7) 100%);
+  border: 1px solid color-mix(in srgb, var(--purple) 40%, transparent);
   margin: 6px 8px;
   animation: keygen-zunas-stars 8s linear infinite;
 }
@@ -1417,65 +1437,69 @@ a:hover {
 }
 
 .keygen-skin--zunas .keygen-track-label {
-  color: var(--border-glow);
-  text-shadow: 0 0 4px var(--border-glow);
+  color: var(--purple);
+  text-shadow: 0 0 4px var(--purple);
 }
 
 .keygen-skin--zunas .keygen-track-display {
-  background: var(--dark-bg);
-  border: 1px solid var(--border-glow);
-  color: var(--border-glow);
-  text-shadow: 0 0 4px var(--border-glow);
+  background: rgba(10, 0, 30, 0.6);
+  border: 1px solid color-mix(in srgb, var(--purple) 40%, transparent);
+  color: var(--text-primary);
+  text-shadow: 0 0 4px color-mix(in srgb, var(--cyan) 50%, transparent);
 }
 
 .keygen-skin--zunas .keygen-eq-bar {
-  background: var(--border-glow);
-  box-shadow: 0 0 4px var(--border-glow);
+  background: linear-gradient(180deg, var(--cyan), var(--purple));
+  box-shadow: 0 0 4px var(--purple);
 }
 
 .keygen-skin--zunas .keygen-ctrl-btn {
-  background: var(--dark-bg);
-  border: 1px solid var(--border-glow);
-  color: var(--border-glow);
+  background: rgba(10, 0, 30, 0.6);
+  border: 1px solid color-mix(in srgb, var(--purple) 50%, transparent);
+  color: var(--purple);
 }
 
 .keygen-skin--zunas .keygen-ctrl-btn:hover:not(:disabled) {
-  background: var(--deep-purple);
-  text-shadow: 0 0 6px var(--border-glow);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--border-glow) 30%, transparent);
+  background: rgba(185, 103, 255, 0.15);
+  border-color: var(--cyan);
+  color: var(--cyan);
+  text-shadow: 0 0 6px var(--cyan);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--cyan) 20%, transparent);
 }
 
 .keygen-skin--zunas .keygen-ctrl-active {
-  background: var(--deep-purple);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--border-glow) 40%, transparent);
+  background: rgba(185, 103, 255, 0.15);
+  border-color: var(--pink);
+  color: var(--pink);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--pink) 25%, transparent);
 }
 
 .keygen-skin--zunas .keygen-volume-slider {
-  background: var(--dark-bg);
-  border: 1px solid var(--border-glow);
+  background: rgba(10, 0, 30, 0.6);
+  border: 1px solid color-mix(in srgb, var(--purple) 40%, transparent);
   height: 5px;
 }
 
 .keygen-skin--zunas .keygen-volume-slider::-webkit-slider-thumb {
-  background: var(--border-glow);
+  background: linear-gradient(135deg, var(--pink), var(--purple));
   border: 1px solid var(--cyan);
   width: 10px;
   height: 14px;
-  box-shadow: 0 0 6px var(--border-glow);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--purple) 50%, transparent);
 }
 
 .keygen-skin--zunas .keygen-volume-slider::-moz-range-thumb {
-  background: var(--border-glow);
+  background: linear-gradient(135deg, var(--pink), var(--purple));
   border: 1px solid var(--cyan);
   width: 10px;
   height: 14px;
-  box-shadow: 0 0 6px var(--border-glow);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--purple) 50%, transparent);
 }
 
 .keygen-skin--zunas .keygen-serial-section {
-  border: 1px solid var(--border-glow);
+  border: 1px solid color-mix(in srgb, var(--purple) 40%, transparent);
   margin: 4px 8px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(10, 0, 30, 0.4);
 }
 
 .keygen-skin--zunas .keygen-label {
@@ -1483,38 +1507,40 @@ a:hover {
 }
 
 .keygen-skin--zunas .keygen-select {
-  background: var(--dark-bg);
-  border: 1px solid var(--border-glow);
-  color: var(--border-glow);
+  background: rgba(10, 0, 30, 0.6);
+  border: 1px solid color-mix(in srgb, var(--purple) 40%, transparent);
+  color: var(--text-primary);
 }
 
 .keygen-skin--zunas .keygen-serial-input {
-  background: var(--dark-bg);
-  border: 1px solid var(--border-glow);
-  color: var(--border-glow);
-  text-shadow: 0 0 4px var(--border-glow);
+  background: rgba(10, 0, 30, 0.6);
+  border: 1px solid color-mix(in srgb, var(--purple) 40%, transparent);
+  color: var(--cyan);
+  text-shadow: 0 0 4px color-mix(in srgb, var(--cyan) 40%, transparent);
 }
 
 .keygen-skin--zunas .keygen-action-btn {
-  background: var(--dark-bg);
-  border: 1px solid var(--border-glow);
-  color: var(--border-glow);
+  background: rgba(10, 0, 30, 0.6);
+  border: 1px solid color-mix(in srgb, var(--purple) 50%, transparent);
+  color: var(--purple);
 }
 
 .keygen-skin--zunas .keygen-action-btn:hover {
-  background: var(--deep-purple);
-  text-shadow: 0 0 6px var(--border-glow);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--border-glow) 30%, transparent);
+  background: rgba(185, 103, 255, 0.15);
+  border-color: var(--cyan);
+  color: var(--cyan);
+  text-shadow: 0 0 6px var(--cyan);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--cyan) 20%, transparent);
 }
 
 .keygen-skin--zunas .keygen-statusbar {
-  background: rgba(0, 0, 0, 0.3);
-  border-top: 1px solid var(--border-glow);
-  color: var(--border-glow);
+  background: rgba(10, 0, 30, 0.4);
+  border-top: 1px solid color-mix(in srgb, var(--purple) 30%, transparent);
+  color: var(--text-primary);
 }
 
 .keygen-skin--zunas .keygen-statusbar-team {
-  text-shadow: 0 0 4px var(--border-glow);
+  text-shadow: 0 0 4px color-mix(in srgb, var(--purple) 40%, transparent);
 }
 
 .keygen-skin--zunas .keygen-statusbar-status {

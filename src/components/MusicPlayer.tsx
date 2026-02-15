@@ -53,7 +53,7 @@ interface Track {
 
 const PLAYLIST: Track[] = [
   { id: '2pApIwI3Nic', title: 'Vaporwave Mix', artist: 'VibesTV' },
-  { id: '5qap5aO4i9A', title: 'lo-fi for ghosts', artist: 'Homework Radio' },
+  { id: 'aJOTlE1K90k', title: 'Synthwave Retro', artist: 'Astral Throb' },
   { id: 'rUxyKA_-grg', title: '80s Synthwave', artist: 'Retrowave' },
   { id: 'MVPTGNGiI-4', title: 'Chillwave Vibes', artist: 'ChillSynth' },
 ]
@@ -137,10 +137,10 @@ export default function MusicPlayer() {
     const state = event.data
     if (state === window.YT.PlayerState.PLAYING) {
       setIsPlaying(true)
+      setHasError(false)
     } else if (state === window.YT.PlayerState.PAUSED) {
       setIsPlaying(false)
     } else if (state === window.YT.PlayerState.ENDED) {
-      // Auto-advance to next track
       setIsPlaying(false)
       setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length)
     }
@@ -149,6 +149,10 @@ export default function MusicPlayer() {
   const onPlayerError = useCallback(() => {
     setHasError(true)
     setIsPlaying(false)
+    // Auto-skip to next track on error after a brief pause
+    setTimeout(() => {
+      setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length)
+    }, 1500)
   }, [])
 
   // ── Load YouTube API & create player ──────────────────
@@ -202,31 +206,17 @@ export default function MusicPlayer() {
   }, [onPlayerReady, onPlayerStateChange, onPlayerError])
 
   // ── Track switching ───────────────────────────────────
-  const pendingTrackRef = useRef<number | null>(null)
   const switchTrack = useCallback((index: number) => {
-    if (!playerRef.current) {
-      pendingTrackRef.current = index
-      return
-    }
+    setHasError(false)
+    if (!playerRef.current) return
     try {
       playerRef.current.loadVideoById(PLAYLIST[index].id)
-      // Belt and suspenders — force play after a short delay
-      const retries = [500, 1500, 3000]
-      retries.forEach((ms) => {
-        setTimeout(() => {
-          try {
-            if (playerRef.current && playerRef.current.getPlayerState() !== window.YT.PlayerState.PLAYING) {
-              playerRef.current.playVideo()
-            }
-          } catch { /* player might be destroyed */ }
-        }, ms)
-      })
+      // Force play after short delays in case loadVideoById doesn't auto-play
+      setTimeout(() => {
+        try { playerRef.current?.playVideo() } catch { /* noop */ }
+      }, 500)
     } catch {
-      // If loadVideoById fails, destroy and recreate
-      pendingTrackRef.current = index
-      playerRef.current.destroy()
-      playerRef.current = null
-      setIsReady(false)
+      setHasError(true)
     }
   }, [])
 
@@ -243,6 +233,7 @@ export default function MusicPlayer() {
   // ── Controls ──────────────────────────────────────────
   const togglePlay = () => {
     if (!playerRef.current || !isReady) return
+    setHasError(false)
     if (isPlaying) {
       playerRef.current.pauseVideo()
     } else {

@@ -54,8 +54,8 @@ interface Track {
 const PLAYLIST: Track[] = [
   { id: '2pApIwI3Nic', title: 'Vaporwave Mix', artist: 'VibesTV' },
   { id: 'aJOTlE1K90k', title: 'Synthwave Retro', artist: 'Astral Throb' },
-  { id: 'rUxyKA_-grg', title: '80s Synthwave', artist: 'Retrowave' },
-  { id: 'MVPTGNGiI-4', title: 'Chillwave Vibes', artist: 'ChillSynth' },
+  { id: '4xDzrJKXOOY', title: 'Synthwave Goose', artist: 'HOME' },
+  { id: 'dQw4w9WgXcQ', title: 'Classic Vibes', artist: 'Rick Astley' },
 ]
 
 // ── Skin system ───────────────────────────────────────────

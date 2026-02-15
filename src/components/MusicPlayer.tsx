@@ -202,11 +202,19 @@ export default function MusicPlayer() {
   }, [onPlayerReady, onPlayerStateChange, onPlayerError])
 
   // ── Track switching ───────────────────────────────────
+  const isFirstRender = useRef(true)
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
     if (playerRef.current && isReady) {
       playerRef.current.loadVideoById(PLAYLIST[currentTrackIndex].id)
+      // Explicit play — loadVideoById doesn't always auto-play
+      setTimeout(() => {
+        playerRef.current?.playVideo()
+      }, 300)
     }
-    // Only react to track changes, not isReady initialization
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTrackIndex])
 

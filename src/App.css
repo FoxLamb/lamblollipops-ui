@@ -596,7 +596,7 @@ a:hover {
 
 /* ── Base keygen window ────────────────────── */
 .keygen-window {
-  max-width: 480px;
+  max-width: 800px;
   width: 100%;
   margin: 0 auto;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

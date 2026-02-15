@@ -68,14 +68,14 @@ interface SkinConfig {
 
 const SKINS: SkinConfig[] = [
   { id: 'void', name: 'Void', teamName: '[ LAMB VOID ]', title: 'LAMB LOLLIPOPS' },
-  { id: 'orion', name: 'Classic', teamName: ':: TEAM LAMB 2026 ::', title: 'LambLollipops Vibe Cracker v4.20' },
+  { id: 'orion', name: 'Classic', teamName: ':: TEAM LAMB 2026 ::', title: 'LambLollipops Vibe Cracker v1.8' },
   { id: 'fff', name: 'Chrome', teamName: 'by LambSoft', title: 'Lamb Generic Multi-Keygen' },
   { id: 'zunas', name: 'Hacker', teamName: ':: LambHax PATCH vol 1 v3.5 ::', title: 'LambHax PATCH vol 1 v3.5' },
 ]
 
 // ── Fake programs for the keygen dropdown ─────────────────
 const FAKE_PROGRAMS = [
-  'LambLollipops Pro v4.2.0',
+  'LambLollipops Pro v1.8.3',
   'Pasture Rendering Engine v11',
   'Wool Compression Toolkit',
   'Flock Dynamics Simulator',
@@ -171,8 +171,8 @@ export default function MusicPlayer() {
       if (!containerRef.current || playerRef.current) return
       playerRef.current = new window.YT.Player(containerRef.current, {
         videoId: PLAYLIST[0].id,
-        width: '1',
-        height: '1',
+        width: '320',
+        height: '180',
         playerVars: {
           autoplay: 1,
           controls: 0,
@@ -202,19 +202,41 @@ export default function MusicPlayer() {
   }, [onPlayerReady, onPlayerStateChange, onPlayerError])
 
   // ── Track switching ───────────────────────────────────
+  const pendingTrackRef = useRef<number | null>(null)
+  const switchTrack = useCallback((index: number) => {
+    if (!playerRef.current) {
+      pendingTrackRef.current = index
+      return
+    }
+    try {
+      playerRef.current.loadVideoById(PLAYLIST[index].id)
+      // Belt and suspenders — force play after a short delay
+      const retries = [500, 1500, 3000]
+      retries.forEach((ms) => {
+        setTimeout(() => {
+          try {
+            if (playerRef.current && playerRef.current.getPlayerState() !== window.YT.PlayerState.PLAYING) {
+              playerRef.current.playVideo()
+            }
+          } catch { /* player might be destroyed */ }
+        }, ms)
+      })
+    } catch {
+      // If loadVideoById fails, destroy and recreate
+      pendingTrackRef.current = index
+      playerRef.current.destroy()
+      playerRef.current = null
+      setIsReady(false)
+    }
+  }, [])
+
   const isFirstRender = useRef(true)
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false
       return
     }
-    if (playerRef.current && isReady) {
-      playerRef.current.loadVideoById(PLAYLIST[currentTrackIndex].id)
-      // Explicit play — loadVideoById doesn't always auto-play
-      setTimeout(() => {
-        playerRef.current?.playVideo()
-      }, 300)
-    }
+    switchTrack(currentTrackIndex)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTrackIndex])
 

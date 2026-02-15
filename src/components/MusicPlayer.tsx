@@ -67,10 +67,10 @@ interface SkinConfig {
 }
 
 const SKINS: SkinConfig[] = [
+  { id: 'zunas', name: 'Hacker', teamName: ':: LambHax PATCH vol 1 v3.5 ::', title: 'LambHax PATCH vol 1 v3.5' },
   { id: 'void', name: 'Void', teamName: '[ LAMB VOID ]', title: 'LAMB LOLLIPOPS' },
   { id: 'orion', name: 'Classic', teamName: ':: TEAM LAMB 2026 ::', title: 'LambLollipops Vibe Cracker v1.8' },
   { id: 'fff', name: 'Chrome', teamName: 'by LambSoft', title: 'Lamb Generic Multi-Keygen' },
-  { id: 'zunas', name: 'Hacker', teamName: ':: LambHax PATCH vol 1 v3.5 ::', title: 'LambHax PATCH vol 1 v3.5' },
 ]
 
 // ── Fake programs for the keygen dropdown ─────────────────

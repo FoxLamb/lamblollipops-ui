@@ -112,7 +112,7 @@ resource "aws_cloudfront_response_headers_policy" "security" {
     }
 
     content_security_policy {
-      content_security_policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; frame-src https://www.youtube.com; img-src 'self' data:; media-src 'self'"
+      content_security_policy = "default-src 'self'; script-src 'self' https://www.youtube.com https://www.google.com; style-src 'self' 'unsafe-inline'; font-src 'self'; frame-src https://www.youtube.com; img-src 'self' data:; media-src 'self'"
       override                = true
     }
   }

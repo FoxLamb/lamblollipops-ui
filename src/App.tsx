@@ -73,6 +73,8 @@ function App() {
       />
 
       <main className="main-content">
+        <MusicPlayer />
+
         <section className="section-box">
           <h2 className="section-title">~ About This Page ~</h2>
           <p className="retro-text">
@@ -88,8 +90,6 @@ function App() {
         </section>
 
         <LambHero mood={lambMood} costume={lambCostume} />
-
-        <MusicPlayer />
       </main>
 
       <Marquee

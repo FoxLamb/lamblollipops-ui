@@ -43,7 +43,7 @@ declare global {
   }
 }
 
-const VIDEO_ID = 'aQkPcPqTq4M'
+const VIDEO_ID = '2pApIwI3Nic'
 
 export default function MusicPlayer() {
   const playerRef = useRef<YTPlayer | null>(null)

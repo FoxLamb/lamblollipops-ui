@@ -89,10 +89,7 @@ function App() {
 
         <LambHero mood={lambMood} costume={lambCostume} />
 
-        <section className="section-box">
-          <h2 className="section-title">~ The Vibe Zone ~</h2>
-          <MusicPlayer />
-        </section>
+        <MusicPlayer />
       </main>
 
       <Marquee

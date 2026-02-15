@@ -7,6 +7,7 @@ interface YTPlayer {
   getPlayerState: () => number
   setVolume: (vol: number) => void
   getVolume: () => number
+  loadVideoById: (videoId: string) => void
   destroy: () => void
 }
 
@@ -43,8 +44,72 @@ declare global {
   }
 }
 
-const VIDEO_ID = '2pApIwI3Nic'
+// ── Playlist ──────────────────────────────────────────────
+interface Track {
+  id: string
+  title: string
+  artist: string
+}
 
+const PLAYLIST: Track[] = [
+  { id: '2pApIwI3Nic', title: 'Vaporwave Mix', artist: 'VibesTV' },
+  { id: '5qap5aO4i9A', title: 'lo-fi for ghosts', artist: 'Homework Radio' },
+  { id: 'rUxyKA_-grg', title: '80s Synthwave', artist: 'Retrowave' },
+  { id: 'MVPTGNGiI-4', title: 'Chillwave Vibes', artist: 'ChillSynth' },
+]
+
+// ── Skin system ───────────────────────────────────────────
+interface SkinConfig {
+  id: string
+  name: string
+  teamName: string
+  title: string
+}
+
+const SKINS: SkinConfig[] = [
+  { id: 'orion', name: 'Classic', teamName: ':: TEAM LAMB 2026 ::', title: 'LambLollipops Vibe Cracker v4.20' },
+  { id: 'fff', name: 'Chrome', teamName: 'by LambSoft', title: 'Lamb Generic Multi-Keygen' },
+  { id: 'zunas', name: 'Hacker', teamName: ':: LambHax PATCH vol 1 v3.5 ::', title: 'LambHax PATCH vol 1 v3.5' },
+  { id: 'void', name: 'Void', teamName: '[ LAMB VOID ]', title: 'LAMB LOLLIPOPS' },
+]
+
+// ── Fake programs for the keygen dropdown ─────────────────
+const FAKE_PROGRAMS = [
+  'LambLollipops Pro v4.20',
+  'Vibe Enhancer Ultra 2026',
+  'Wool Shader 3000 Deluxe',
+  'CyberLamb Security Suite',
+  'BaaS Cloud Manager v7.1',
+  'LolliPop Torrent Pro',
+  'Fleece Photoshop v13.37',
+  'Shepherd OS Ultimate',
+  'MeadowCraft Builder Pro',
+  'Lamb AutoTune Platinum',
+]
+
+// ── Key generation ────────────────────────────────────────
+const HEX_CHARS = '0123456789ABCDEF'
+const ALPHA_NUM = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+
+function randomChars(chars: string, len: number): string {
+  let result = ''
+  for (let i = 0; i < len; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)]
+  }
+  return result
+}
+
+function generateSerial(): string {
+  const formats = [
+    () => `${randomChars(HEX_CHARS, 4)}-${randomChars(HEX_CHARS, 4)}-${randomChars(HEX_CHARS, 4)}-${randomChars(HEX_CHARS, 4)}`,
+    () => `${randomChars(ALPHA_NUM, 5)}-${randomChars(ALPHA_NUM, 5)}-${randomChars(ALPHA_NUM, 5)}`,
+    () => `${randomChars(HEX_CHARS, 4)}-${randomChars(ALPHA_NUM, 4)}-${randomChars(HEX_CHARS, 4)}-${randomChars(ALPHA_NUM, 4)}-${randomChars(HEX_CHARS, 4)}`,
+    () => `LL${randomChars(HEX_CHARS, 2)}-${randomChars(ALPHA_NUM, 4)}-${randomChars(HEX_CHARS, 4)}-${randomChars(ALPHA_NUM, 3)}`,
+  ]
+  return formats[Math.floor(Math.random() * formats.length)]()
+}
+
+// ── Component ─────────────────────────────────────────────
 export default function MusicPlayer() {
   const playerRef = useRef<YTPlayer | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -52,11 +117,19 @@ export default function MusicPlayer() {
   const [isReady, setIsReady] = useState(false)
   const [volume, setVolume] = useState(50)
   const [hasError, setHasError] = useState(false)
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
+  const [skinIndex, setSkinIndex] = useState(0)
+  const [generatedKey, setGeneratedKey] = useState('0000-0000-0000-0000')
+  const [selectedProgram, setSelectedProgram] = useState(0)
+  const [keyFlash, setKeyFlash] = useState(false)
 
+  const currentSkin = SKINS[skinIndex]
+  const currentTrack = PLAYLIST[currentTrackIndex]
+
+  // ── YouTube callbacks ─────────────────────────────────
   const onPlayerReady = useCallback((event: YTPlayerEvent) => {
     setIsReady(true)
     event.target.setVolume(50)
-    // Autoplay — splash screen click satisfies browser interaction requirement
     event.target.playVideo()
   }, [])
 
@@ -64,11 +137,12 @@ export default function MusicPlayer() {
     const state = event.data
     if (state === window.YT.PlayerState.PLAYING) {
       setIsPlaying(true)
-    } else if (
-      state === window.YT.PlayerState.PAUSED ||
-      state === window.YT.PlayerState.ENDED
-    ) {
+    } else if (state === window.YT.PlayerState.PAUSED) {
       setIsPlaying(false)
+    } else if (state === window.YT.PlayerState.ENDED) {
+      // Auto-advance to next track
+      setIsPlaying(false)
+      setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length)
     }
   }, [])
 
@@ -77,19 +151,17 @@ export default function MusicPlayer() {
     setIsPlaying(false)
   }, [])
 
+  // ── Load YouTube API & create player ──────────────────
   useEffect(() => {
-    // Load YouTube IFrame API
     const loadAPI = () => {
       if (window.YT && window.YT.Player) {
         createPlayer()
         return
       }
-
       const tag = document.createElement('script')
       tag.src = 'https://www.youtube.com/iframe_api'
       const firstScript = document.getElementsByTagName('script')[0]
       firstScript.parentNode?.insertBefore(tag, firstScript)
-
       window.onYouTubeIframeAPIReady = () => {
         createPlayer()
       }
@@ -97,11 +169,10 @@ export default function MusicPlayer() {
 
     const createPlayer = () => {
       if (!containerRef.current || playerRef.current) return
-
       playerRef.current = new window.YT.Player(containerRef.current, {
-        videoId: VIDEO_ID,
-        width: '100%',
-        height: '200',
+        videoId: PLAYLIST[0].id,
+        width: '1',
+        height: '1',
         playerVars: {
           autoplay: 1,
           controls: 0,
@@ -130,6 +201,16 @@ export default function MusicPlayer() {
     }
   }, [onPlayerReady, onPlayerStateChange, onPlayerError])
 
+  // ── Track switching ───────────────────────────────────
+  useEffect(() => {
+    if (playerRef.current && isReady) {
+      playerRef.current.loadVideoById(PLAYLIST[currentTrackIndex].id)
+    }
+    // Only react to track changes, not isReady initialization
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTrackIndex])
+
+  // ── Controls ──────────────────────────────────────────
   const togglePlay = () => {
     if (!playerRef.current || !isReady) return
     if (isPlaying) {
@@ -137,6 +218,14 @@ export default function MusicPlayer() {
     } else {
       playerRef.current.playVideo()
     }
+  }
+
+  const nextTrack = () => {
+    setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length)
+  }
+
+  const prevTrack = () => {
+    setCurrentTrackIndex((prev) => (prev - 1 + PLAYLIST.length) % PLAYLIST.length)
   }
 
   const handleVolume = (newVol: number) => {
@@ -147,69 +236,173 @@ export default function MusicPlayer() {
     }
   }
 
+  const cycleSkin = () => {
+    setSkinIndex((prev) => (prev + 1) % SKINS.length)
+  }
+
+  const handleGenerate = () => {
+    setGeneratedKey(generateSerial())
+    setKeyFlash(true)
+    setTimeout(() => setKeyFlash(false), 600)
+  }
+
   const volumeIcon = volume === 0 ? '🔇' : volume < 40 ? '🔈' : volume < 70 ? '🔉' : '🔊'
 
+  // ── Render ────────────────────────────────────────────
   return (
-    <div className="music-player">
-      <div className="youtube-section">
-        <h3 className="youtube-title">📺 Vibes Corner 📺</h3>
+    <div className={`keygen-window keygen-skin--${currentSkin.id}`}>
+      {/* Title bar */}
+      <div className="keygen-titlebar">
+        <span className="keygen-titlebar-icon">💊</span>
+        <span className="keygen-titlebar-text">{currentSkin.title}</span>
+        <div className="keygen-titlebar-buttons">
+          <button
+            className="keygen-titlebar-btn keygen-btn-skin"
+            onClick={cycleSkin}
+            title="Change Skin"
+          >
+            S
+          </button>
+          <button className="keygen-titlebar-btn keygen-btn-minimize" title="lol no">
+            _
+          </button>
+          <button className="keygen-titlebar-btn keygen-btn-x" title="nice try">
+            X
+          </button>
+        </div>
+      </div>
 
-        {/* Now Playing indicator */}
-        <div className="now-playing-bar">
-          {isPlaying ? (
-            <>
-              <span className="eq-bars">
-                <span className="eq-bar" />
-                <span className="eq-bar" />
-                <span className="eq-bar" />
-                <span className="eq-bar" />
-                <span className="eq-bar" />
-              </span>
-              <span className="now-playing-text">NOW PLAYING</span>
-              <span className="eq-bars">
-                <span className="eq-bar" />
-                <span className="eq-bar" />
-                <span className="eq-bar" />
-                <span className="eq-bar" />
-                <span className="eq-bar" />
-              </span>
-            </>
-          ) : (
-            <span className="now-playing-text">
-              {hasError ? 'SIGNAL LOST' : isReady ? 'PAUSED' : 'TUNING IN...'}
+      {/* Banner / logo area */}
+      <div className="keygen-banner">
+        <div className="keygen-banner-text">
+          <span className="keygen-banner-title">LAMB</span>
+          <span className="keygen-banner-title">LOLLIPOPS</span>
+        </div>
+        <div className="keygen-banner-tagline">where the vibes never stop</div>
+        <div className="keygen-scanlines" />
+      </div>
+
+      {/* Track info display */}
+      <div className="keygen-track-section">
+        <div className="keygen-track-label">NOW PLAYING:</div>
+        <div className="keygen-track-display">
+          <span className="keygen-track-num">
+            [{String(currentTrackIndex + 1).padStart(2, '0')}/{String(PLAYLIST.length).padStart(2, '0')}]
+          </span>
+          <span className="keygen-track-name">
+            {currentTrack.artist} - {currentTrack.title}
+          </span>
+          {isPlaying && (
+            <span className="keygen-eq-bars">
+              <span className="keygen-eq-bar" />
+              <span className="keygen-eq-bar" />
+              <span className="keygen-eq-bar" />
+              <span className="keygen-eq-bar" />
+              <span className="keygen-eq-bar" />
             </span>
           )}
         </div>
+      </div>
 
-        {/* Video embed (YT API takes over this div) */}
-        <div className="youtube-embed">
-          <div ref={containerRef} />
+      {/* Music transport controls */}
+      <div className="keygen-controls">
+        <button
+          className="keygen-ctrl-btn"
+          onClick={prevTrack}
+          disabled={!isReady}
+          title="Previous Track"
+        >
+          |◄
+        </button>
+        <button
+          className={`keygen-ctrl-btn keygen-ctrl-play ${isPlaying ? 'keygen-ctrl-active' : ''}`}
+          onClick={togglePlay}
+          disabled={!isReady}
+          title={isPlaying ? 'Pause' : 'Play'}
+        >
+          {isPlaying ? '■' : '►'}
+        </button>
+        <button
+          className="keygen-ctrl-btn"
+          onClick={nextTrack}
+          disabled={!isReady}
+          title="Next Track"
+        >
+          ►|
+        </button>
+
+        <div className="keygen-volume">
+          <span className="keygen-volume-icon">{volumeIcon}</span>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={volume}
+            onChange={(e) => handleVolume(Number(e.target.value))}
+            className="keygen-volume-slider"
+            title={`Volume: ${volume}%`}
+          />
         </div>
+      </div>
 
-        {/* Retro controls */}
-        <div className="player-controls">
-          <button
-            className={`player-btn player-btn--play ${isPlaying ? 'player-btn--active' : ''}`}
-            onClick={togglePlay}
-            disabled={!isReady}
-            title={isPlaying ? 'Pause' : 'Play'}
+      {/* Keygen serial section */}
+      <div className="keygen-serial-section">
+        <div className="keygen-field-row">
+          <label className="keygen-label">Program:</label>
+          <select
+            className="keygen-select"
+            value={selectedProgram}
+            onChange={(e) => setSelectedProgram(Number(e.target.value))}
           >
-            {isPlaying ? '⏸' : '▶'}
-          </button>
-
-          <div className="volume-control">
-            <span className="volume-icon">{volumeIcon}</span>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={volume}
-              onChange={(e) => handleVolume(Number(e.target.value))}
-              className="volume-slider"
-              title={`Volume: ${volume}%`}
-            />
-          </div>
+            {FAKE_PROGRAMS.map((prog, i) => (
+              <option key={i} value={i}>
+                {prog}
+              </option>
+            ))}
+          </select>
         </div>
+
+        <div className="keygen-field-row">
+          <label className="keygen-label">Serial:</label>
+          <input
+            className={`keygen-serial-input ${keyFlash ? 'keygen-serial-flash' : ''}`}
+            type="text"
+            readOnly
+            value={generatedKey}
+            onClick={(e) => (e.target as HTMLInputElement).select()}
+          />
+        </div>
+
+        <div className="keygen-btn-row">
+          <button className="keygen-action-btn" onClick={handleGenerate}>
+            Generate
+          </button>
+          <button
+            className="keygen-action-btn"
+            onClick={() => navigator.clipboard?.writeText(generatedKey)}
+          >
+            Copy
+          </button>
+        </div>
+      </div>
+
+      {/* Status bar */}
+      <div className="keygen-statusbar">
+        <span className="keygen-statusbar-team">{currentSkin.teamName}</span>
+        <span className="keygen-statusbar-status">
+          {hasError
+            ? 'ERR: SIGNAL LOST'
+            : isReady
+              ? isPlaying
+                ? 'PLAYING'
+                : 'PAUSED'
+              : 'LOADING...'}
+        </span>
+      </div>
+
+      {/* Hidden YouTube player (audio only) */}
+      <div className="keygen-yt-hidden" aria-hidden="true">
+        <div ref={containerRef} />
       </div>
     </div>
   )

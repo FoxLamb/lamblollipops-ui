@@ -285,7 +285,6 @@ function getStarfieldConfig(period: TimePeriod): StarfieldConfig {
 function getLambMood(
   period: TimePeriod,
   holidays: HolidayId[],
-  isWeekend: boolean,
   isGolden: boolean
 ): LambMood {
   // Golden lamb overrides everything
@@ -382,7 +381,7 @@ export function useSeasonalTheme(): SeasonalTheme {
   return useMemo(() => ({
     cssVariables: getCssVariables(period, activeHolidays, isGoldenLamb),
     starfieldConfig: getStarfieldConfig(period),
-    lambMood: getLambMood(period, activeHolidays, isWeekend, isGoldenLamb),
+    lambMood: getLambMood(period, activeHolidays, isGoldenLamb),
     lambCostume: getLambCostume(activeHolidays),
     marqueeOverride: getMarqueeOverride(period, activeHolidays, isWeekend),
     decorationParticles: getDecorationParticles(activeHolidays),

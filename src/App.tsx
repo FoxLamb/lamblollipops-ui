@@ -58,14 +58,7 @@ function App() {
       <CursorTrail seasonalStyle={seasonalTrailStyle} />
       {decorationParticles && <HolidayOverlay type={decorationParticles} />}
 
-      <header className="site-header">
-        <div className="header-border">
-          <h1 className="site-title glow-text">
-            ~*~ LambLollipops ~*~
-          </h1>
-          <p className="subtitle blink">Welcome to my corner of the web!</p>
-        </div>
-      </header>
+      <MusicPlayer />
 
       <Marquee
         text="★ Welcome to LambLollipops! ★ The sweetest spot on the information superhighway! ★ Lambs and lollipops forever! ★ Maximum vibes detected! ★"
@@ -73,8 +66,6 @@ function App() {
       />
 
       <main className="main-content">
-        <MusicPlayer />
-
         <section className="section-box">
           <h2 className="section-title">~ About This Page ~</h2>
           <p className="retro-text">

@@ -53,12 +53,7 @@ interface Track {
 
 const PLAYLIST: Track[] = [
   { id: '2pApIwI3Nic', title: 'Vaporwave Mix', artist: 'VibesTV' },
-  { id: 'aJOTlE1K90k', title: 'Synthwave Retro', artist: 'Astral Throb' },
-  { id: '4xDzrJKXOOY', title: 'Synthwave Goose', artist: 'HOME' },
-  { id: 'i1gE3nyQnKA', title: 'Keygen Church', artist: 'Chiptune Archive' },
-  { id: 'UGFzWbLd6ZA', title: 'Best of Keygen Music', artist: 'Keygen FM' },
-  { id: 'OBmM79YC-HQ', title: 'Keygen Music Mix Vol 1', artist: 'Demoscene' },
-  { id: 'IT1YS0oBzqY', title: 'Cracktro Chiptunes', artist: 'Warez Classics' },
+  { id: 'OxdBqqoj73o', title: 'Best Of 2011', artist: 'KeyGen Music' },
 ]
 
 // ── Skin system ───────────────────────────────────────────
@@ -296,13 +291,14 @@ export default function MusicPlayer() {
         </div>
       </div>
 
-      {/* Banner / logo area */}
-      <div className="keygen-banner">
-        <div className="keygen-banner-text">
-          <span className="keygen-banner-title">LAMB</span>
-          <span className="keygen-banner-title">LOLLIPOPS</span>
-        </div>
-        <div className="keygen-banner-tagline">where the vibes never stop</div>
+      {/* Banner / logo area — merged site header */}
+      <div className="keygen-banner keygen-banner--hero">
+        <div className="keygen-banner-deco">·.:*~★~*:.·</div>
+        <h1 className="keygen-banner-hero-title glow-text">
+          ~*~ LambLollipops ~*~
+        </h1>
+        <div className="keygen-banner-deco">·.:*~★~*:.·</div>
+        <p className="keygen-banner-welcome blink">Welcome to my corner of the web!</p>
         <div className="keygen-scanlines" />
       </div>
 

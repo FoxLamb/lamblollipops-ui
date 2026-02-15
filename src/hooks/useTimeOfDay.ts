@@ -59,8 +59,8 @@ function getActiveHolidays(month: number, day: number, year: number): HolidayId[
     holidays.push('halloween')
   }
 
-  // Valentine's Day: Feb 13-15
-  if (month === 2 && day >= 13 && day <= 15) {
+  // Valentine's Day: Feb 14 only
+  if (month === 2 && day === 14) {
     holidays.push('valentines')
   }
 

@@ -598,7 +598,9 @@ a:hover {
 .keygen-window {
   max-width: 800px;
   width: 100%;
-  margin: 0 auto;
+  margin: 2rem auto 0;
+  padding-left: 1rem;
+  padding-right: 1rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 12px;
   position: relative;
@@ -686,6 +688,40 @@ a:hover {
   letter-spacing: 0.3em;
   text-transform: lowercase;
   margin-top: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Hero banner variant (merged site header) ── */
+.keygen-banner--hero {
+  padding: 24px 16px;
+  min-height: 120px;
+  gap: 4px;
+}
+
+.keygen-banner-deco {
+  color: var(--yellow);
+  font-size: 1.2rem;
+  letter-spacing: 0.3em;
+  position: relative;
+  z-index: 2;
+}
+
+.keygen-banner-hero-title {
+  font-family: var(--font-pixel);
+  font-size: clamp(0.9rem, 3vw, 1.6rem);
+  line-height: 1.4;
+  white-space: nowrap;
+  position: relative;
+  z-index: 2;
+  margin: 0.5rem 0;
+}
+
+.keygen-banner-welcome {
+  font-family: var(--font-retro);
+  font-size: 1.5rem;
+  color: var(--cyan);
+  margin-top: 0.5rem;
   position: relative;
   z-index: 2;
 }
@@ -979,6 +1015,20 @@ a:hover {
   text-shadow: 0 0 6px rgba(100, 180, 255, 0.4);
 }
 
+.keygen-skin--orion .keygen-banner-deco {
+  color: #ffd700;
+}
+
+.keygen-skin--orion .keygen-banner-hero-title {
+  -webkit-text-fill-color: #6ec6ff;
+  background: none;
+  text-shadow: 0 0 10px rgba(100, 180, 255, 0.8), 2px 2px 0 #0a0a4e;
+}
+
+.keygen-skin--orion .keygen-banner-welcome {
+  color: #a0c0e0;
+}
+
 .keygen-skin--orion .keygen-track-section {
   margin: 0 6px;
 }
@@ -1143,6 +1193,20 @@ a:hover {
 }
 
 .keygen-skin--fff .keygen-banner-tagline {
+  color: #90b0d0;
+}
+
+.keygen-skin--fff .keygen-banner-deco {
+  color: #ffd700;
+}
+
+.keygen-skin--fff .keygen-banner-hero-title {
+  -webkit-text-fill-color: #7eb8ff;
+  background: none;
+  text-shadow: 0 0 12px rgba(100, 160, 255, 0.6), 1px 1px 0 #000;
+}
+
+.keygen-skin--fff .keygen-banner-welcome {
   color: #90b0d0;
 }
 
@@ -1342,6 +1406,16 @@ a:hover {
   text-shadow: 0 0 8px var(--cyan);
 }
 
+.keygen-skin--zunas .keygen-banner-deco {
+  color: var(--yellow);
+  text-shadow: 0 0 6px var(--yellow);
+}
+
+.keygen-skin--zunas .keygen-banner-welcome {
+  color: var(--cyan);
+  text-shadow: 0 0 8px var(--cyan);
+}
+
 .keygen-skin--zunas .keygen-track-label {
   color: var(--border-glow);
   text-shadow: 0 0 4px var(--border-glow);
@@ -1513,6 +1587,20 @@ a:hover {
   letter-spacing: 0.4em;
 }
 
+.keygen-skin--void .keygen-banner-deco {
+  color: #555;
+}
+
+.keygen-skin--void .keygen-banner-hero-title {
+  -webkit-text-fill-color: #fff;
+  background: none;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 0 0 40px rgba(255, 255, 255, 0.1);
+}
+
+.keygen-skin--void .keygen-banner-welcome {
+  color: #666;
+}
+
 .keygen-skin--void .keygen-scanlines {
   background: repeating-linear-gradient(
     0deg,
@@ -1642,6 +1730,10 @@ a:hover {
 
   .keygen-banner-title {
     font-size: 1rem !important;
+  }
+
+  .keygen-banner-hero-title {
+    font-size: 0.75rem !important;
   }
 
   .keygen-controls {

@@ -75,16 +75,16 @@ const SKINS: SkinConfig[] = [
 
 // ── Fake programs for the keygen dropdown ─────────────────
 const FAKE_PROGRAMS = [
-  'LambLollipops Pro v4.20',
-  'Baa-ware Vibe Injector 3000',
-  'Wool Over Your Eyes v2.3',
-  'FluffOS: Sheep Edition',
-  'Meadow.exe (totally safe)',
-  'LolliCrack Supreme v0.1b',
-  'Shepherds Pie Defragmenter',
-  'Baaad Decision Maker Pro',
-  'Fleece Lightning Turbo',
-  'Lamb Chop Sound Blaster 98',
+  'LambLollipops Pro v4.2.0',
+  'Pasture Rendering Engine v11',
+  'Wool Compression Toolkit',
+  'Flock Dynamics Simulator',
+  'Shepherd Command Line Utils',
+  'Meadow Partition Manager',
+  'Fleece Codec Pack v8.1',
+  'Grazing Path Optimizer',
+  'Lamb Kernel Debugger',
+  'Herd Protocol Analyzer',
 ]
 
 // ── Key generation ────────────────────────────────────────

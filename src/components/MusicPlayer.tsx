@@ -77,7 +77,7 @@ const SKINS: SkinConfig[] = [
 const FAKE_PROGRAMS = [
   'LambLollipops Pro v4.20',
   'Baa-ware Vibe Injector 3000',
-  'Wool Over Your Eyes v6.9',
+  'Wool Over Your Eyes v2.3',
   'FluffOS: Sheep Edition',
   'Meadow.exe (totally safe)',
   'LolliCrack Supreme v0.1b',

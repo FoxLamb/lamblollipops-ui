@@ -55,7 +55,7 @@ const PLAYLIST: Track[] = [
   { id: '2pApIwI3Nic', title: 'Vaporwave Mix', artist: 'VibesTV' },
   { id: 'aJOTlE1K90k', title: 'Synthwave Retro', artist: 'Astral Throb' },
   { id: '4xDzrJKXOOY', title: 'Synthwave Goose', artist: 'HOME' },
-  { id: 'dQw4w9WgXcQ', title: 'Classic Vibes', artist: 'Rick Astley' },
+  { id: 'MV_3Dpw-BRY', title: 'Midnight City', artist: 'M83' },
 ]
 
 // ── Skin system ───────────────────────────────────────────

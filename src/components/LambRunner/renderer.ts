@@ -218,13 +218,16 @@ function drawLamb(
   ctx.font = '28px serif'
   ctx.textAlign = 'center'
 
-  // Tilt during jump
+  // Flip horizontally so lamb faces right
   if (lamb.airborne) {
     ctx.translate(lamb.x, lamb.y - 14)
-    ctx.rotate(lamb.vy * 0.02)
+    ctx.scale(-1, 1)
+    ctx.rotate(-lamb.vy * 0.02)
     ctx.fillText('🐑', 0, 0)
   } else {
-    ctx.fillText('🐑', lamb.x, lamb.y - 2)
+    ctx.translate(lamb.x, lamb.y - 2)
+    ctx.scale(-1, 1)
+    ctx.fillText('🐑', 0, 0)
   }
 
   ctx.restore()

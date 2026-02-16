@@ -138,23 +138,38 @@ export default function LambHero({
     }
   }, [])
 
+  // Wake the lamb if sleeping (reused by action handlers)
+  const wakeLamb = useCallback(() => {
+    if (mood === 'sleeping' && !isAwake) {
+      setIsAwake(true)
+      if (wakeTimeoutRef.current) clearTimeout(wakeTimeoutRef.current)
+      wakeTimeoutRef.current = setTimeout(() => {
+        setIsAwake(false)
+        wakeTimeoutRef.current = null
+      }, 2500)
+    }
+  }, [mood, isAwake])
+
   // Wrapped action handlers that trigger visuals
   const handleFeed = useCallback(() => {
+    wakeLamb()
     const ok = petActions.feed()
     if (ok) spawnReaction('feed')
     return ok
-  }, [petActions, spawnReaction])
+  }, [petActions, spawnReaction, wakeLamb])
 
   const handlePet = useCallback(() => {
+    wakeLamb()
     petActions.pet()
     spawnReaction('pet')
-  }, [petActions, spawnReaction])
+  }, [petActions, spawnReaction, wakeLamb])
 
   const handlePlay = useCallback(() => {
+    wakeLamb()
     const ok = petActions.play()
     if (ok) spawnReaction('play')
     return ok
-  }, [petActions, spawnReaction])
+  }, [petActions, spawnReaction, wakeLamb])
 
   const isSleeping = mood === 'sleeping' && !isAwake
   const isYawning = mood === 'sleeping' && isAwake
@@ -243,7 +258,6 @@ export default function LambHero({
           onFeed={handleFeed}
           onPet={handlePet}
           onPlay={handlePlay}
-          isSleeping={mood === 'sleeping'}
           feedCooldown={feedCooldown}
           energy={petState.energy}
         />

@@ -79,6 +79,8 @@ function App() {
           </p>
         </section>
 
+        <LambRunner />
+
         <LambHero
           mood={lambMood}
           costume={lambCostume}
@@ -87,8 +89,6 @@ function App() {
           petActions={petActions}
           feedCooldown={feedCooldown}
         />
-
-        <LambRunner />
       </main>
 
       <Marquee

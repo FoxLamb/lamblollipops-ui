@@ -6,12 +6,15 @@ import HolidayOverlay from './components/HolidayOverlay'
 import Marquee from './components/Marquee'
 import LambHero from './components/LambHero'
 import MusicPlayer from './components/MusicPlayer'
+import LambRunner from './components/LambRunner/LambRunner'
 import Footer from './components/Footer'
 import { useSeasonalTheme } from './hooks/useSeasonalTheme'
+import { usePetState } from './hooks/usePetState'
 
 function App() {
   const [entered, setEntered] = useState(false)
   const theme = useSeasonalTheme()
+  const { state: petState, mood: petMood, actions: petActions, feedCooldown } = usePetState()
 
   // Apply CSS variable overrides to document root (runs for both splash and main site)
   useEffect(() => {
@@ -74,13 +77,18 @@ function App() {
             radical site on the internet! Here you will find lambs, lollipops,
             and vibes that transcend the boundaries of cyberspace.
           </p>
-          <p className="retro-text">
-            This page has been lovingly hand-crafted with the finest HTML
-            since the dawn of the internet age.
-          </p>
         </section>
 
-        <LambHero mood={lambMood} costume={lambCostume} />
+        <LambHero
+          mood={lambMood}
+          costume={lambCostume}
+          petState={petState}
+          petMood={petMood}
+          petActions={petActions}
+          feedCooldown={feedCooldown}
+        />
+
+        <LambRunner />
       </main>
 
       <Marquee

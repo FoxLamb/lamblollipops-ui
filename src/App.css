@@ -578,6 +578,276 @@ a:hover {
 }
 
 
+/* --- Pet Name Banner --- */
+.lamb-name-banner {
+  text-align: center;
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  color: var(--cyan);
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px rgba(1, 205, 254, 0.5);
+  animation: name-fade-in 400ms ease-out;
+}
+
+@keyframes name-fade-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Pet Name Prompt --- */
+.pet-name-prompt {
+  text-align: center;
+  margin-bottom: 1rem;
+  animation: prompt-fade-in 300ms ease;
+}
+
+@keyframes prompt-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pet-name-label {
+  display: block;
+  font-family: var(--font-pixel);
+  font-size: 0.55rem;
+  color: var(--cyan);
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 8px rgba(1, 205, 254, 0.4);
+}
+
+.pet-name-input-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pet-name-input {
+  background: rgba(10, 0, 20, 0.8);
+  border: 1px solid var(--purple);
+  color: var(--text-primary);
+  font-family: var(--font-retro);
+  font-size: 1.1rem;
+  padding: 0.4rem 0.6rem;
+  width: 160px;
+  outline: none;
+  caret-color: var(--cyan);
+}
+
+.pet-name-input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 8px rgba(1, 205, 254, 0.3);
+}
+
+.pet-name-input::placeholder {
+  color: rgba(224, 208, 255, 0.3);
+}
+
+.pet-name-btn {
+  background: transparent;
+  border: 1px solid var(--green);
+  color: var(--green);
+  font-family: var(--font-pixel);
+  font-size: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+  transition: background 200ms ease, box-shadow 200ms ease;
+}
+
+.pet-name-btn:hover:not(:disabled) {
+  background: rgba(5, 255, 161, 0.15);
+  box-shadow: 0 0 8px rgba(5, 255, 161, 0.3);
+}
+
+.pet-name-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* --- Pet Action Buttons --- */
+.pet-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.pet-action-btn {
+  background: transparent;
+  border: 1px solid var(--purple);
+  color: var(--text-primary);
+  font-family: var(--font-pixel);
+  font-size: 0.45rem;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  transition: background 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 100ms ease;
+}
+
+.pet-action-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.pet-action-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.pet-action-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.pet-action-feed {
+  border-color: var(--pink);
+}
+
+.pet-action-feed:hover:not(:disabled) {
+  background: rgba(255, 113, 206, 0.15);
+  box-shadow: 0 0 8px rgba(255, 113, 206, 0.3);
+}
+
+.pet-action-pet {
+  border-color: var(--cyan);
+}
+
+.pet-action-pet:hover:not(:disabled) {
+  background: rgba(1, 205, 254, 0.15);
+  box-shadow: 0 0 8px rgba(1, 205, 254, 0.3);
+}
+
+.pet-action-play {
+  border-color: var(--green);
+}
+
+.pet-action-play:hover:not(:disabled) {
+  background: rgba(5, 255, 161, 0.15);
+  box-shadow: 0 0 8px rgba(5, 255, 161, 0.3);
+}
+
+.pet-action--active {
+  transform: scale(1.1) !important;
+}
+
+/* --- Pet Stats Panel --- */
+.pet-stats {
+  background: rgba(10, 0, 20, 0.8);
+  border: 1px solid var(--purple);
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pet-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.pet-stat-label {
+  font-family: var(--font-pixel);
+  font-size: 0.45rem;
+  color: var(--text-primary);
+  min-width: 80px;
+  white-space: nowrap;
+}
+
+.pet-stat-track {
+  flex: 1;
+  max-width: 120px;
+  height: 10px;
+  background: #0a0a0a;
+  border: 1px solid var(--purple);
+  overflow: hidden;
+}
+
+.pet-stat-fill {
+  height: 100%;
+  transition: width 500ms ease-out, background-color 300ms ease;
+}
+
+.pet-bar--high {
+  background: var(--green);
+  box-shadow: 0 0 4px rgba(5, 255, 161, 0.4);
+}
+
+.pet-bar--mid {
+  background: var(--yellow);
+  box-shadow: 0 0 4px rgba(255, 251, 150, 0.4);
+}
+
+.pet-bar--low {
+  background: var(--pink);
+  box-shadow: 0 0 4px rgba(255, 113, 206, 0.4);
+}
+
+/* --- Pet Mood Animations --- */
+.lamb-pet-hungry {
+  animation: lamb-float 3s ease-in-out infinite, lamb-sway 2s ease-in-out infinite;
+}
+
+@keyframes lamb-sway {
+  0%, 100% { margin-left: 0; }
+  50% { margin-left: 6px; }
+}
+
+.lamb-pet-sad {
+  filter: drop-shadow(0 0 20px var(--pink)) drop-shadow(0 0 40px var(--purple)) saturate(0.7);
+  transform: translateY(5px);
+  animation: lamb-float 5s ease-in-out infinite;
+}
+
+.lamb-pet-tired {
+  animation: lamb-float 6s ease-in-out infinite;
+  opacity: 0.85;
+}
+
+.lamb-pet-ecstatic {
+  animation: lamb-float 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px var(--pink)) drop-shadow(0 0 60px var(--purple)) drop-shadow(0 0 80px var(--cyan));
+}
+
+
+/* --- Lamb Runner Mini-Game --- */
+.lamb-runner-section {
+  user-select: none;
+}
+
+.lamb-runner-canvas-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 0.75rem 0;
+}
+
+.lamb-runner-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  cursor: pointer;
+  border: 1px solid var(--purple);
+  box-shadow: 0 0 10px rgba(185, 103, 255, 0.2);
+}
+
+.lamb-runner-instructions {
+  text-align: center;
+  font-family: var(--font-pixel);
+  font-size: 0.45rem;
+  color: var(--text-primary);
+  opacity: 0.7;
+  margin-top: 0.5rem;
+}
+
+.lamb-runner-highscore {
+  text-align: center;
+  font-family: var(--font-pixel);
+  font-size: 0.5rem;
+  color: var(--cyan);
+  text-shadow: 0 0 6px rgba(1, 205, 254, 0.4);
+  margin-top: 0.3rem;
+}
+
+
 /* =============================================
    KEYGEN MUSIC PLAYER
    Classic 2000s-era crack/keygen aesthetic

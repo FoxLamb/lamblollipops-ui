@@ -1,13 +1,36 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import type { LambMood } from '../hooks/useSeasonalTheme'
+import type { PetMood } from '../hooks/usePetState'
+import PetNamePrompt from './PetNamePrompt'
+import PetActions from './PetActions'
+import PetStats from './PetStats'
+
+interface PetState {
+  name: string | null
+  hunger: number
+  happiness: number
+  energy: number
+}
+
+interface PetActionsHandlers {
+  setName: (name: string) => void
+  feed: () => boolean
+  pet: () => void
+  play: () => boolean
+}
 
 interface LambHeroProps {
   mood?: LambMood
   costume?: string | null
+  petState: PetState
+  petMood: PetMood
+  petActions: PetActionsHandlers
+  feedCooldown: boolean
 }
 
-// Caption text by mood
-function getCaptionText(mood: LambMood): string {
+// Caption text — pet mood overlays when no seasonal override
+function getCaptionText(mood: LambMood, petMood: PetMood, petName: string | null): string {
+  // Seasonal/special moods take priority
   switch (mood) {
     case 'sleeping': return '🌙 shhh... the lamb is sleeping... 🌙'
     case 'golden': return '✨ THE GOLDEN LAMB ✨ You are truly blessed! ✨'
@@ -18,11 +41,28 @@ function getCaptionText(mood: LambMood): string {
     case 'bunny': return '🐣 Hoppy Easter! The lamb found all the eggs! 🥚'
     case 'fiesta': return '🎊 Feliz Cinco de Mayo! Fiesta lamb! 🌮'
     case 'sunglasses': return '😎 Weekend vibes! The lamb is chilling! 😎'
-    default: return '★ Click the lamb for sparkles! ★'
+  }
+
+  if (!petName) return '★ Click the lamb for sparkles! ★'
+
+  // Pet mood captions
+  switch (petMood) {
+    case 'ecstatic': return `★ ${petName} is absolutely thriving! ★`
+    case 'hungry': return `🍭 ${petName} looks hungry... feed me! 🍭`
+    case 'sad': return `💔 ${petName} missed you... 💔`
+    case 'tired': return `😴 ${petName} is getting sleepy... 😴`
+    default: return `★ ${petName} loves the sparkles! ★`
   }
 }
 
-export default function LambHero({ mood = 'default', costume = null }: LambHeroProps) {
+export default function LambHero({
+  mood = 'default',
+  costume = null,
+  petState,
+  petMood,
+  petActions,
+  feedCooldown,
+}: LambHeroProps) {
   const [sparkles, setSparkles] = useState<{ id: number; x: number; y: number }[]>([])
   const [isAwake, setIsAwake] = useState(false)
   const wakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -46,6 +86,9 @@ export default function LambHero({ mood = 'default', costume = null }: LambHeroP
   }, [mood])
 
   const handleClick = useCallback((e: React.MouseEvent) => {
+    // Don't trigger sparkles/pet when clicking buttons inside
+    if ((e.target as HTMLElement).closest('.pet-actions, .pet-name-prompt')) return
+
     const rect = e.currentTarget.getBoundingClientRect()
     const x = e.clientX - rect.left
     const y = e.clientY - rect.top
@@ -56,6 +99,11 @@ export default function LambHero({ mood = 'default', costume = null }: LambHeroP
       setSparkles(prev => prev.filter(s => s.id !== newSparkle.id))
     }, 1000)
 
+    // Clicking the lamb also counts as petting (when not sleeping)
+    if (mood !== 'sleeping' && petState.name) {
+      petActions.pet()
+    }
+
     // Wake the sleeping lamb briefly
     if (mood === 'sleeping' && !isAwake) {
       setIsAwake(true)
@@ -65,16 +113,11 @@ export default function LambHero({ mood = 'default', costume = null }: LambHeroP
         wakeTimeoutRef.current = null
       }, 2500)
     }
-  }, [mood, isAwake])
+  }, [mood, isAwake, petState.name, petActions])
 
   const isSleeping = mood === 'sleeping' && !isAwake
   const isYawning = mood === 'sleeping' && isAwake
-
-  // Build CSS classes for the lamb section
-  const sectionClasses = [
-    'section-box',
-    'lamb-hero-section',
-  ].filter(Boolean).join(' ')
+  const hasName = petState.name !== null
 
   // Build CSS classes for the lamb emoji
   const emojiClasses = [
@@ -82,11 +125,25 @@ export default function LambHero({ mood = 'default', costume = null }: LambHeroP
     isSleeping ? 'lamb-sleeping' : '',
     isYawning ? 'lamb-yawning' : '',
     mood === 'golden' ? 'lamb-golden' : '',
+    hasName && petMood === 'hungry' ? 'lamb-pet-hungry' : '',
+    hasName && petMood === 'sad' ? 'lamb-pet-sad' : '',
+    hasName && petMood === 'tired' ? 'lamb-pet-tired' : '',
+    hasName && petMood === 'ecstatic' ? 'lamb-pet-ecstatic' : '',
   ].filter(Boolean).join(' ')
 
   return (
-    <section className={sectionClasses} onClick={handleClick}>
+    <section className="section-box lamb-hero-section" onClick={handleClick}>
       <h2 className="section-title">~ The Lamb ~</h2>
+
+      {/* Name prompt or name banner */}
+      {!hasName ? (
+        <PetNamePrompt onSubmit={petActions.setName} />
+      ) : (
+        <div className="lamb-name-banner glow-text">
+          「 {petState.name} 」
+        </div>
+      )}
+
       <div className="lamb-container">
         <div className="sparkle-ring sparkle-ring-1">✦</div>
         <div className="sparkle-ring sparkle-ring-2">✧</div>
@@ -126,9 +183,32 @@ export default function LambHero({ mood = 'default', costume = null }: LambHeroP
           </span>
         ))}
       </div>
-      <p className="lamb-caption glow-text">
-        {getCaptionText(mood)}
+
+      {/* Pet action buttons — only show when named */}
+      {hasName && (
+        <PetActions
+          onFeed={petActions.feed}
+          onPet={petActions.pet}
+          onPlay={petActions.play}
+          isSleeping={mood === 'sleeping'}
+          feedCooldown={feedCooldown}
+          energy={petState.energy}
+        />
+      )}
+
+      <p className="lamb-caption glow-text" aria-live="polite">
+        {getCaptionText(mood, petMood, petState.name)}
       </p>
+
+      {/* Pet stats — only show when named */}
+      {hasName && (
+        <PetStats
+          hunger={petState.hunger}
+          happiness={petState.happiness}
+          energy={petState.energy}
+        />
+      )}
+
       <div className="lamb-facts">
         <p className="retro-text">
           🐑 Lambs can recognize up to 50 individual faces — both sheep and

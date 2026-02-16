@@ -52,8 +52,8 @@ interface Track {
 }
 
 const PLAYLIST: Track[] = [
-  { id: '2pApIwI3Nic', title: 'Vaporwave Mix', artist: 'VibesTV' },
   { id: 'OxdBqqoj73o', title: 'Best Of 2011', artist: 'KeyGen Music' },
+  { id: '2pApIwI3Nic', title: 'Vaporwave Mix', artist: 'VibesTV' },
 ]
 
 // ── Skin system ───────────────────────────────────────────

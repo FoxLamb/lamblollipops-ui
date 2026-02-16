@@ -55,6 +55,8 @@ function getCaptionText(mood: LambMood, petMood: PetMood, petName: string | null
   }
 }
 
+type ActionReaction = { id: number; type: 'feed' | 'pet' | 'play' }
+
 export default function LambHero({
   mood = 'default',
   costume = null,
@@ -65,6 +67,8 @@ export default function LambHero({
 }: LambHeroProps) {
   const [sparkles, setSparkles] = useState<{ id: number; x: number; y: number }[]>([])
   const [isAwake, setIsAwake] = useState(false)
+  const [reactions, setReactions] = useState<ActionReaction[]>([])
+  const [lambReaction, setLambReaction] = useState<'feed' | 'play' | null>(null)
   const wakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Clean up wake timeout
@@ -115,6 +119,43 @@ export default function LambHero({
     }
   }, [mood, isAwake, petState.name, petActions])
 
+  // Spawn floating reaction particles
+  const spawnReaction = useCallback((type: 'feed' | 'pet' | 'play') => {
+    const count = type === 'pet' ? 4 : 1
+    const newReactions: ActionReaction[] = []
+    for (let i = 0; i < count; i++) {
+      newReactions.push({ id: Date.now() + i, type })
+    }
+    setReactions(prev => [...prev, ...newReactions])
+    setTimeout(() => {
+      setReactions(prev => prev.filter(r => !newReactions.some(nr => nr.id === r.id)))
+    }, 1200)
+
+    // Lamb body reaction (chomp for feed, bounce for play)
+    if (type === 'feed' || type === 'play') {
+      setLambReaction(type)
+      setTimeout(() => setLambReaction(null), 600)
+    }
+  }, [])
+
+  // Wrapped action handlers that trigger visuals
+  const handleFeed = useCallback(() => {
+    const ok = petActions.feed()
+    if (ok) spawnReaction('feed')
+    return ok
+  }, [petActions, spawnReaction])
+
+  const handlePet = useCallback(() => {
+    petActions.pet()
+    spawnReaction('pet')
+  }, [petActions, spawnReaction])
+
+  const handlePlay = useCallback(() => {
+    const ok = petActions.play()
+    if (ok) spawnReaction('play')
+    return ok
+  }, [petActions, spawnReaction])
+
   const isSleeping = mood === 'sleeping' && !isAwake
   const isYawning = mood === 'sleeping' && isAwake
   const hasName = petState.name !== null
@@ -129,6 +170,8 @@ export default function LambHero({
     hasName && petMood === 'sad' ? 'lamb-pet-sad' : '',
     hasName && petMood === 'tired' ? 'lamb-pet-tired' : '',
     hasName && petMood === 'ecstatic' ? 'lamb-pet-ecstatic' : '',
+    lambReaction === 'feed' ? 'lamb-chomp' : '',
+    lambReaction === 'play' ? 'lamb-bounce' : '',
   ].filter(Boolean).join(' ')
 
   return (
@@ -182,14 +225,24 @@ export default function LambHero({
             ✨
           </span>
         ))}
+        {/* Action reaction particles */}
+        {reactions.map((r) => {
+          const emoji = r.type === 'feed' ? '🍭' : r.type === 'pet' ? '💖' : '⚽'
+          const cls = `action-reaction action-reaction--${r.type}`
+          return (
+            <span key={r.id} className={cls} aria-hidden="true">
+              {emoji}
+            </span>
+          )
+        })}
       </div>
 
       {/* Pet action buttons — only show when named */}
       {hasName && (
         <PetActions
-          onFeed={petActions.feed}
-          onPet={petActions.pet}
-          onPlay={petActions.play}
+          onFeed={handleFeed}
+          onPet={handlePet}
+          onPlay={handlePlay}
           isSleeping={mood === 'sleeping'}
           feedCooldown={feedCooldown}
           energy={petState.energy}

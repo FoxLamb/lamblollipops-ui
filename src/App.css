@@ -807,6 +807,117 @@ a:hover {
   filter: drop-shadow(0 0 30px var(--pink)) drop-shadow(0 0 60px var(--purple)) drop-shadow(0 0 80px var(--cyan));
 }
 
+/* --- Lamb Action Reaction Particles --- */
+.action-reaction {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10;
+  font-size: 1.5rem;
+  left: 50%;
+  top: 40%;
+}
+
+.action-reaction--feed {
+  animation: reaction-feed 1.2s ease-in-out forwards;
+}
+
+.action-reaction--pet {
+  animation: reaction-hearts 1.2s ease-out forwards;
+}
+
+.action-reaction--pet:nth-child(odd) {
+  animation-delay: 0.1s;
+}
+
+.action-reaction--play {
+  animation: reaction-play 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes reaction-feed {
+  0% {
+    transform: translate(-50%, 50px) scale(0.5);
+    opacity: 0;
+  }
+  30% {
+    transform: translate(-50%, 0) scale(1.2);
+    opacity: 1;
+  }
+  60% {
+    transform: translate(-50%, -10px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -20px) scale(0.3);
+    opacity: 0;
+  }
+}
+
+@keyframes reaction-hearts {
+  0% {
+    transform: translate(calc(-50% + var(--rx, 0px)), 0) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--rx, 0px)), -10px) scale(1);
+  }
+  100% {
+    transform: translate(calc(-50% + var(--rx, 0px)), -60px) scale(0.6);
+    opacity: 0;
+  }
+}
+
+/* Spread hearts horizontally */
+.action-reaction--pet:nth-child(1) { --rx: -20px; }
+.action-reaction--pet:nth-child(2) { --rx: 10px; }
+.action-reaction--pet:nth-child(3) { --rx: -8px; animation-delay: 0.15s; }
+.action-reaction--pet:nth-child(4) { --rx: 22px; animation-delay: 0.2s; }
+
+@keyframes reaction-play {
+  0% {
+    transform: translate(-50%, 40px) scale(0.5);
+    opacity: 0;
+  }
+  40% {
+    transform: translate(-50%, -30px) scale(1);
+    opacity: 1;
+  }
+  70% {
+    transform: translate(calc(-50% + 30px), -10px) scale(0.9);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(calc(-50% + 50px), 20px) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* --- Lamb Body Reactions --- */
+.lamb-chomp {
+  animation: lamb-chomp-anim 0.6s ease-in-out !important;
+}
+
+@keyframes lamb-chomp-anim {
+  0% { transform: translateY(0) scaleX(1); }
+  20% { transform: translateY(-5px) scaleX(1.15); }
+  40% { transform: translateY(0) scaleX(0.9); }
+  60% { transform: translateY(-3px) scaleX(1.1); }
+  80% { transform: translateY(0) scaleX(0.95); }
+  100% { transform: translateY(0) scaleX(1); }
+}
+
+.lamb-bounce {
+  animation: lamb-bounce-anim 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+@keyframes lamb-bounce-anim {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(-25px) rotate(5deg); }
+  50% { transform: translateY(-20px) rotate(-3deg); }
+  70% { transform: translateY(-8px) rotate(2deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+
 
 /* --- Lamb Runner Mini-Game --- */
 .lamb-runner-section {
